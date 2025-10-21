@@ -26,7 +26,7 @@ export async function nhentai(query = "chinese") {
         // 全部图片
         const images = item.images.pages.map((p, idx) => {
             const ext = extMap[p.t] || "jpg"
-            return `https://i.nhentai.net/galleries/${mediaId}/${idx + 1}.${ext}`
+            return `https://i9.nhentai.net/galleries/${mediaId}/${idx + 1}.${ext}`
         })
 
         // 内容
