@@ -7,14 +7,14 @@ export async function nhentai(query = "chinese") {
     const items = []
     const now = Date.now()
 
-    const extMap = { j: "jpg", p: "png", g: "gif", w: "webp" }
+    const extMap = {j: "jpg", p: "png", g: "gif", w: "webp"}
 
     for (let i = 0; i < data.result.length; i++) {
         const item = data.result[i]
 
         const gid = item.id
         const mediaId = item.media_id
-        const title = item.title.english || item.title.japanese || item.title.pretty || `Gallery ${gid}`
+        const title =  item.title.japanese || item.title.english ||item.title.pretty || `Gallery ${gid}`
         const tags = item.tags.map(t => t.name).join(", ")
         const pages = item.images.pages.length
 
