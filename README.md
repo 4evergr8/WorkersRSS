@@ -19,7 +19,7 @@
 - **Javbus**  
   示例链接: [https://rss.4evergr8.workers.dev/?javbus=vbt](https://rss.4evergr8.workers.dev/?javbus=vbt)
 - **Nhentai**  
-  示例链接: [https://rss.4evergr8.workers.dev/?nhentai=chinese](https://rss.4evergr8.workers.dev/?javbus=vbt)
+  示例链接: [https://rss.4evergr8.workers.dev/?nhentai=chinese fullcolor](https://rss.4evergr8.workers.dev/?nhentai=chinese fullcolor)
 
 
 ## ⛔ 已放弃的站点
