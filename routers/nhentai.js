@@ -8,7 +8,7 @@ export async function nhentai(query = "chinese") {
     const now = Date.now();
     const extMap = {j: "jpg", p: "png", g: "gif", w: "webp"};
 
-    // 用于去重的 Set，存储规范化后的标题（去掉常见后缀）
+    // 用于去重的 Set，存储规范化后的标题（只去掉版本后缀）
     const seen = new Set();
 
     for (let i = 0; i < data.result.length; i++) {
@@ -20,28 +20,24 @@ export async function nhentai(query = "chinese") {
         // 优先级：日文标题 > 英文标题 > pretty标题
         let rawTitle = item.title.japanese || item.title.english || item.title.pretty || `Gallery ${gid}`;
 
-        // 提取核心标题：去除常见的版本后缀（如 [中国翻訳], [DL版], [無修正], ver.2 等）
+        // 规范化标题：只移除版本后缀，保留核心作品名
         const normalizedTitle = rawTitle
-            .replace(/\s*[[\(]中国(翻訳|汉化)[\]\)]\s*/g, '')
-            .replace(/\s*[[\(]DL版[\]\)]\s*/g, '')
-            .replace(/\s*[[\(]無修正?[\]\)]\s*/g, '')
-            .replace(/\s*ver\.\d+\s*/gi, '')
-            .replace(/\s*[\(（].*?[\)）]\s*$/, '')  // 去掉末尾括号内容
-            .trim();
+            // 移除常见版本标记（括号或方括号内的）
+            .replace(/\s*\[(無修正|DL版|中国(翻訳|汉化)|ページ欠落|ver\.\d+|C\d+)\]\s*/gi, ' ')
+            // 移除末尾多余的方括号标签
+            .replace(/\s*\[.*?\]\s*$/, '')
+            // 清理多余空格
+            .replace(/\s+/g, ' ')
+            .trim()
+            .toLowerCase();  // 统一大小写，避免大小写差异导致误判
 
-        // 组合作者（圈子）+ 规范化标题 作为唯一键
-        const circle = item.tags.find(t => t.type === "artist")?.name ||
-            item.tags.find(t => t.type === "group")?.name ||
-            "unknown";
-        const uniqueKey = `${circle}|${normalizedTitle}`;
-
-        // 如果已经见过这个核心作品，就跳过
-        if (seen.has(uniqueKey)) {
+        // 如果已经见过这个规范化后的标题，就跳过（同一作品只保留一个，通常是最新）
+        if (seen.has(normalizedTitle)) {
             continue;
         }
-        seen.add(uniqueKey);
+        seen.add(normalizedTitle);
 
-        // 保留原始标题（用户还是想看到完整标题，包括版本信息）
+        // 保留原始标题（RSS 中显示完整标题，包括版本信息）
         const title = rawTitle;
 
         const tags = item.tags.map(t => t.name).join(", ");
@@ -80,7 +76,6 @@ ${images.map(url => `<img src="${url}" />`).join("<br/>\n")}
         link: `https://nhentai.net/search/?q=${query}`,
         image: "https://nhentai.net/favicon.ico"
     };
-
 
     return itemsToRss(items, channel);
 }
