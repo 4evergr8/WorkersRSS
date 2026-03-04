@@ -1,43 +1,105 @@
-# 🌐 RSSWorker
+# WorkerRSS 🌐
 
-**RSSWorker** 是一个基于 Cloudflare Worker 的 RSS 生成工具。它通过访问网页或调用 API，将内容转换为标准 RSS，可自部署使用。
+基于 **Cloudflare Workers** 的轻量 RSS 生成工具  
+一键把网站/平台内容转成标准 RSS feed，自部署 RSSHub 替代方案！📡
 
-## ⚙️ 功能原理
-- 🌍 访问网页或调用各平台 API
-- 📝 解析内容（文字、图片、链接等）
-- 📡 生成 RSS feed
+![Cloudflare Workers](https://img.shields.io/badge/Cloudflare%20Workers-%23F38020?style=flat&logo=cloudflare&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
 
-## 💻 支持的平台
-- **GitHub**  
-  示例链接: [https://rss.4evergr8.workers.dev/?github=4evergr8/atoolbox](https://rss.4evergr8.workers.dev/?github=4evergr8/atoolbox)
-- **DLsite**  
-  示例链接: [https://rss.4evergr8.workers.dev/?dlsite=RG51931](https://rss.4evergr8.workers.dev/?dlsite=RG51931)
-- **Kemono**  
-  示例链接: [https://rss.4evergr8.workers.dev/?kemono=fanbox/user/3316400](https://rss.4evergr8.workers.dev/?kemono=fanbox/user/3316400)
-- **Cospuri**  
-  示例链接: [https://rss.4evergr8.workers.dev/?cospuri=ria-kurumi](https://rss.4evergr8.workers.dev/?cospuri=ria-kurumi)
-- **Javbus**  
-  示例链接: [https://rss.4evergr8.workers.dev/?javbus=vbt](https://rss.4evergr8.workers.dev/?javbus=vbt)
-- **Nhentai**  
-  示例链接: [https://rss.4evergr8.workers.dev/?nhentai=chinese](https://rss.4evergr8.workers.dev/?nhentai=chinese)
+## 项目碎碎念😅
 
+我一直认为 RSS 属于那种「不是每天都看，但是偶尔会去确认一下」的内容。  
+结果迫于 RSSHub 没有我想要的网站，也没找到稳定可靠的公共节点，又不想自己花钱买服务器折腾，就硬着头皮自己写了一个……  
 
-## ⛔ 已放弃的站点
-- [Pixiv](https://www.pixiv.net) 理由：防火墙阻止WorkerIP访问，防爬可过
-- [JavDB](https://javdb.com) 理由：防火墙有几率阻止WorkerIP访问，似乎无防爬
+写到一半才发现网上已经有更成熟的实现了😂，但箭在弦上不得不发，还是咬牙写完了。  
+好在最终效果还不错，至少对我自己够用了！
 
+**想要添加新网站？其实超级简单** ✨  
+用 `?raw=` 参数把目标网址丢进去，先访问一下看看有没有风控、能不能正常加载内容。  
+把项目地址 + 项目里已有的任何一个网站的解析代码一起丢给AI，它基本就能帮你写出对应的解析逻辑。  
 
+多数网站支持直接调用 API（速度快、干净），少数顽固的只能老老实实解析网页 HTML。
 
-## 🚀 自部署
-[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/4evergr8/WorkerRSS/)
+## 🔥 功能亮点
 
-1. 📦 将项目部署到 Cloudflare Worker
-2. 🔧 配置访问 URL
-3. 📰 使用平台参数生成 RSS
-  
+- 🌍 访问网页或调用平台 API，轻松抓取内容
+- 📝 智能解析文字、图片、链接、发布时间等，转成标准 RSS
+- 🔧 添加新网站超简单：丢 URL + 源码给 ChatGPT，它帮你写解析器！
+- ⚡ 无需服务器，Cloudflare Workers 免费部署，30 秒上线
+- 📡 输出纯正 RSS 2.0 feed，兼容 Feedly、Inoreader、FreshRSS、NetNewsWire 等所有主流阅读器
+- 🛡️ 完全自建，避开 RSSHub 节点不稳/缺站/延迟高的痛点
 
-我一直认为rss属于那种“不是每天都看，但是偶尔会去确认一下”的内容  
-迫于rsshub没有我想要的网站，也没找到可靠的节点，又不想自己花钱买服务器，就整了这个，写到一半发现已经有成熟的实现了😅，只能硬着头皮写完了  
-想要添加新网站很简单  
-参数raw，值是目标网址，访问一下查看有没有风控，能不能正常加载内容，把网站部分源码和已有的任何一个网站的代码一起提交给Chatgpt，它知道怎么做  
-多数网站支持api请求，少数网站只能解析网页  
+## 🚀 极速部署
+
+### 方式一：GitHub 一键导入（最推荐）
+
+1. 右上角 **Fork** 本仓库 🌟，想加新平台就先改改代码
+2. 打开 [Cloudflare Dashboard](https://dash.cloudflare.com) → Workers & Pages
+3. **Create application** → **Workers** → **Import repository**
+4. 选你 fork 的仓库 → **Import** → **Deploy** 搞定！🎉
+
+### 方式二：wrangler CLI 硬核玩家
+
+```bash
+npm install -g wrangler          # 第一次用先装
+wrangler login                   # 浏览器登录 Cloudflare
+wrangler dev                     # 本地调试，改代码秒刷新
+wrangler deploy                  # 一键推到云端！
+```
+
+部署后得到你的专属 RSS 地址，例如：
+
+```
+https://rss.你的名字.workers.dev
+```
+
+## 🎯 怎么用？超级直观！
+
+基本格式（直接浏览器打开或丢进 RSS 阅读器）：
+
+```
+https://你的workers域名/?<平台>=<ID或路径>
+```
+
+真实例子 🔥：
+
+- GitHub 仓库更新：  
+  `https://rss.4evergr8.workers.dev/?github=4evergr8/atoolbox`
+
+- DLsite 新作：  
+  `https://rss.4evergr8.workers.dev/?dlsite=RG51931`
+
+- Kemono Fanbox 用户：  
+  `https://rss.4evergr8.workers.dev/?kemono=fanbox/user/3316400`
+
+- Cospuri 模特：  
+  `https://rss.4evergr8.workers.dev/?cospuri=ria-kurumi`
+
+- Javbus 演员：  
+  `https://rss.4evergr8.workers.dev/?javbus=vbt`
+
+- Nhentai 中文搜索：  
+  `https://rss.4evergr8.workers.dev/?nhentai=chinese`
+
+想抓任意网页？直接用 raw 参数：
+
+```
+https://你的workers域名/?raw=https://example.com/some-page
+```
+
+（然后让 ChatGPT 帮你写解析规则就行～）
+
+## 注意事项 ⚠️
+
+- 部分站点（如 Pixiv、JavDB）因强防火墙/反爬机制已放弃支持
+- Workers 免费额度每天 10 万次请求，个人用绰绰有余
+- 添加新平台前，先用 `?raw=` 测试目标站是否能正常抓取
+- 建议绑定自定义域名 + 强制 HTTPS，提升稳定性和隐私
+
+## ❤️ 感谢 & 灵感来源
+
+- Cloudflare Workers 平台
+- RSSHub 项目（但我就是不想等公共节点也不想自建大服务器😂）
+- 所有 RSS 爱好者 & 自部署玩家
+
+如果这个小工具对你也有用，点个 **Star** 支持一下吧～ ⭐✨  
