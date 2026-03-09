@@ -28,24 +28,11 @@
 - ⚡ 无需服务器，Cloudflare Workers 免费部署，30 秒上线
 - 📡 输出纯正 RSS 2.0 feed，兼容 Feedly、Inoreader、FreshRSS、NetNewsWire 等所有主流阅读器
 - 🛡️ 完全自建，避开 RSSHub 节点不稳/缺站/延迟高的痛点
-
 ## 🚀 极速部署
+<a href="https://deploy.workers.cloudflare.com/?url=https://github.com/4evergr8/WorkersRSS">
+    <img src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare Workers" style="height: 32px;"/>
+</a>  
 
-### 方式一：GitHub 一键导入（最推荐）
-
-1. 右上角 **Fork** 本仓库 🌟，想加新平台就先改改代码
-2. 打开 [Cloudflare Dashboard](https://dash.cloudflare.com) → Workers & Pages
-3. **Create application** → **Workers** → **Import repository**
-4. 选你 fork 的仓库 → **Import** → **Deploy** 搞定！🎉
-
-### 方式二：wrangler CLI 硬核玩家
-
-```bash
-npm install -g wrangler          # 第一次用先装
-wrangler login                   # 浏览器登录 Cloudflare
-wrangler dev                     # 本地调试，改代码秒刷新
-wrangler deploy                  # 一键推到云端！
-```
 
 部署后得到你的专属 RSS 地址，例如：
 
@@ -53,7 +40,7 @@ wrangler deploy                  # 一键推到云端！
 https://rss.你的名字.workers.dev
 ```
 
-## 🎯 怎么用？超级直观！
+## 🎯 食用方法
 
 基本格式（直接浏览器打开或丢进 RSS 阅读器）：
 
@@ -94,12 +81,9 @@ https://你的workers域名/?raw=https://example.com/some-page
 - 部分站点（如 Pixiv、JavDB）因强防火墙/反爬机制已放弃支持
 - Workers 免费额度每天 10 万次请求，个人用绰绰有余
 - 添加新平台前，先用 `?raw=` 测试目标站是否能正常抓取
-- 建议绑定自定义域名 + 强制 HTTPS，提升稳定性和隐私
 
 ## ❤️ 感谢 & 灵感来源
 
 - Cloudflare Workers 平台
 - RSSHub 项目（但我就是不想等公共节点也不想自建大服务器😂）
-- 所有 RSS 爱好者 & 自部署玩家
-
-如果这个小工具对你也有用，点个 **Star** 支持一下吧～ ⭐✨  
+ 
