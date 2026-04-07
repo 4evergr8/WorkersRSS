@@ -1,70 +1,77 @@
-import {itemsToRss} from "../rss.js"
+import { itemsToRss } from "../rss.js";
 
 export async function nhentai(query = "chinese") {
-    const resp = await fetch(`https://nhentai.net/api/galleries/search?query=${query}&page=1&sort=new-uploads`);
+    const resp = await fetch(`https://nhentai.net/api/v2/search?query=${encodeURIComponent(query)}&page=1`, {
+        headers: {
+            "User-Agent": "YourRSSApp/1.0 (+https://yourdomain.com)", // 强烈建议修改成你自己的
+            // "Authorization": "Key YOUR_API_KEY"   // 如有 API Key 可在此添加
+        }
+    });
+
+    if (!resp.ok) {
+        throw new Error(`nhentai API 请求失败: ${resp.status}`);
+    }
+
     const data = await resp.json();
 
     const items = [];
     const now = Date.now();
-    const extMap = {j: "jpg", p: "png", g: "gif", w: "webp"};
-
-    // 用于去重的 Set，存储规范化后的标题（只去掉版本后缀）
-    const seen = new Set();
+    const seen = new Set(); // 用于去重
 
     for (let i = 0; i < data.result.length; i++) {
         const item = data.result[i];
 
+        if (item.blacklisted) continue;
+
         const gid = item.id;
         const mediaId = item.media_id;
 
-        // 优先级：日文标题 > 英文标题 > pretty标题
-        let rawTitle = item.title.japanese || item.title.english || item.title.pretty || `Gallery ${gid}`;
+        // 日语和英语标题
+        const japaneseTitle = item.japanese_title || "";
+        const englishTitle = item.english_title || "";
 
-        // 规范化标题：只移除版本后缀，保留核心作品名
-        const normalizedTitle = rawTitle
-            // 移除常见版本标记（括号或方括号内的）
-            .replace(/\s*\[(無修正|DL版|中国(翻訳|汉化)|ページ欠落|ver\.\d+|C\d+)\]\s*/gi, ' ')
-            // 移除末尾多余的方括号标签
+        // RSS 标题：有日语用日语，没有日语用英语
+        let displayTitle = japaneseTitle || englishTitle || `Gallery ${gid}`;
+
+        // 规范化标题用于去重（基于 displayTitle）
+        const normalizedTitle = displayTitle
+            .replace(/\s*\[(無修正|DL版|中国(翻訳|汉化)|ページ欠落|ver\.\d+|C\d+|AI翻译|AI generated)\]\s*/gi, ' ')
             .replace(/\s*\[.*?\]\s*$/, '')
-            // 清理多余空格
             .replace(/\s+/g, ' ')
             .trim()
-            .toLowerCase();  // 统一大小写，避免大小写差异导致误判
+            .toLowerCase();
 
-        // 如果已经见过这个规范化后的标题，就跳过（同一作品只保留一个，通常是最新）
         if (seen.has(normalizedTitle)) {
             continue;
         }
         seen.add(normalizedTitle);
 
-        // 保留原始标题（RSS 中显示完整标题，包括版本信息）
-        const title = rawTitle;
+        const pages = item.num_pages || 0;
 
-        const tags = item.tags.map(t => t.name).join(", ");
-        const pages = item.images.pages.length;
+        // 封面
+        const cover = `https://t.nhentai.net/${item.thumbnail}`;
 
-        const coverType = item.images.cover.t || "j";
-        const coverExt = extMap[coverType] || "jpg";
-        const cover = `https://t.nhentai.net/galleries/${mediaId}/cover.${coverExt}`;
+        // 图片链接（使用 i.nhentai.net）
+        const images = [];
+        for (let p = 1; p <= pages; p++) {
+            images.push(`https://i.nhentai.net/galleries/${mediaId}/${p}.jpg`);
+        }
 
-        const images = item.images.pages.map((p, idx) => {
-            const ext = extMap[p.t] || "jpg";
-            return `https://i9.nhentai.net/galleries/${mediaId}/${idx + 1}.${ext}`;
-        });
-
+        // 正文同时显示英语和日语标题
         const desc = `<![CDATA[
-标签: ${tags}<br/>
+日语标题: ${japaneseTitle || "（无）"}<br/>
+英语标题: ${englishTitle || "（无）"}<br/>
 页数: ${pages}<br/>
-<img src="${cover}" /><br/>
-${images.map(url => `<img src="${url}" />`).join("<br/>\n")}
+<img src="${cover}" alt="cover" /><br/>
+${images.map(url => `<img src="${url}" alt="page" />`).join("<br/>\n")}
 ]]>`;
 
         items.push({
-            title,
+            title: displayTitle,
             link: `https://nhentai.net/g/${gid}/`,
             description: desc,
             author: "nhentai",
-            enclosure: {url: cover, type: "image/jpeg", length: "0"},
+            enclosure: { url: cover, type: "image/jpeg", length: "0" },
             guid: String(gid),
             pubDate: new Date(now - i * 1000).toUTCString(),
         });
@@ -72,8 +79,8 @@ ${images.map(url => `<img src="${url}" />`).join("<br/>\n")}
 
     const channel = {
         title: `${query} - nhentai`,
-        description: `${query} - nhentai`,
-        link: `https://nhentai.net/search/?q=${query}`,
+        description: `nhentai 搜索: ${query}`,
+        link: `https://nhentai.net/search/?q=${encodeURIComponent(query)}`,
         image: "https://nhentai.net/favicon.ico"
     };
 
