@@ -2,10 +2,6 @@ import { itemsToRss } from "../rss.js";
 
 export async function nhentai(query = "chinese") {
     const resp = await fetch(`https://nhentai.net/api/v2/search?query=${encodeURIComponent(query)}&page=1`, {
-        headers: {
-            "User-Agent": "YourRSSApp/1.0 (+https://yourdomain.com)", // 强烈建议修改成你自己的
-            // "Authorization": "Key YOUR_API_KEY"   // 如有 API Key 可在此添加
-        }
     });
 
     if (!resp.ok) {
@@ -54,7 +50,7 @@ export async function nhentai(query = "chinese") {
         // 图片链接（使用 i.nhentai.net）
         const images = [];
         for (let p = 1; p <= pages; p++) {
-            images.push(`https://i.nhentai.net/galleries/${mediaId}/${p}.jpg`);
+            images.push(`https://i.nhentai.net/galleries/${mediaId}/${p}.webp`);
         }
 
         // 正文同时显示英语和日语标题
