@@ -54,24 +54,18 @@ https://你的workers域名/?<平台>=<ID或路径>
   `https://rss.4evergr8.workers.dev/?github=4evergr8/atoolbox`
 
 - DLsite 新作：  
-  `https://rss.4evergr8.workers.dev/?dlsite=RG51931`
+  `https://rss.4evergr8.workers.dev/dlsite/RG51931`
 
 - Kemono Fanbox 用户：  
-  `https://rss.4evergr8.workers.dev/?kemono=fanbox/user/3316400`
-
-- Cospuri 模特：  
-  `https://rss.4evergr8.workers.dev/?cospuri=ria-kurumi`
-
-- Javbus 演员：  
-  `https://rss.4evergr8.workers.dev/?javbus=vbt`
+  `https://rss.4evergr8.workers.dev/kemono/fanbox/user/3316400`
 
 - Nhentai 中文搜索：  
-  `https://rss.4evergr8.workers.dev/?nhentai=chinese`
+  `https://rss.4evergr8.workers.dev/nhentai/chinese`
 
-想抓任意网页？直接用 raw 参数：
+想抓任意网页？直接用 raw ：
 
 ```
-https://你的workers域名/?raw=https://example.com/some-page
+https://你的workers域名/raw/https://example.com/some-page
 ```
 
 （然后让 ChatGPT 帮你写解析规则就行～）
