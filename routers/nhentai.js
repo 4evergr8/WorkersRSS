@@ -95,7 +95,7 @@ export async function nhentai(query = "chinese") {
                 title: displayTitle,
                 id: String(gid),
                 link: `https://nhentai.net/g/${gid}/`,
-                description: fullContent, 
+                description: fullContent,
                 author: [{name: displayName}],
                 date: new Date(now.getTime() - feed.items.length * 1000),
                 image: cover
