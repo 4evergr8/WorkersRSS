@@ -95,8 +95,8 @@ export async function nhentai(query = "chinese") {
                 title: displayTitle,
                 id: String(gid),
                 link: `https://nhentai.net/g/${gid}/`,
-                description: fullContent, // 已删掉总页数信息
-                author: [{name: "nhentai"}],
+                description: fullContent, 
+                author: [{name: displayName}],
                 date: new Date(now.getTime() - feed.items.length * 1000),
                 image: cover
             });
