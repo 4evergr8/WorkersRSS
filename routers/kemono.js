@@ -1,55 +1,57 @@
-import { DateTime } from "luxon";
-import { itemsToRss } from "../rss.js";
+import { Feed } from "feed";
 
 export async function kemono(ID) {
     const resp = await fetch(`https://kemono.cr/api/v1/${ID}/posts`, {
         headers: {
-            "Accept": "text/css",
-
+            "Accept": "application/json",
         }
-    })
-    console.log("kemono:", ID)
-    const data = await resp.json()
-    const items = []
+    });
+    console.log("kemono:", ID);
+    const data = await resp.json();
+
+    const now = new Date();
+    const feed = new Feed({
+        title: `${ID} - Kemono`,
+        description: `${ID} - Kemono`,
+        id: `https://kemono.cr/${ID}`,
+        link: `https://kemono.cr/${ID}`,
+        language: "zh",
+        image: "https://kemono.cr/static/apple-touch-icon.png",
+        updated: now,
+        generator: "Feed for Node.js",
+        author: {
+            name: "Kemono",
+            link: "https://kemono.cr"
+        }
+    });
 
     for (const post of data) {
-        const title = post.title || "无标题"
-        const link = `https://kemono.cr/${post.service}/user/${post.user}/post/${post.id}`
-        const contentHtml = post.substring || ""
-        const datetime = post.published || ""
-        const rssTime = datetime
-            ? DateTime.fromISO(datetime, { zone: 'utc' }).toRFC2822()
-            : ""
+        const title = post.title || "无标题";
+        const link = `https://kemono.cr/${post.service}/user/${post.user}/post/${post.id}`;
+        const contentHtml = post.content || post.substring || "";
+        const datetime = post.published || "";
 
         const enclosureUrl = post.file?.path
             ? `https://kemono.cr/data${post.file.path}`
-            : "https://kemono.cr/static/noimage.png"
+            : "https://kemono.cr/static/noimage.png";
 
-        // 拼接正文和图片
-        const content = `<![CDATA[${contentHtml}<br><img src="${enclosureUrl}" />]]>`
+        const fullContent = `
+${contentHtml}
+<br><br>
+<img src="${enclosureUrl}" />
+`;
 
-        items.push({
+        feed.addItem({
             title: title,
+            id: link,
             link: link,
-            description: content,
-            author: post.user,
-            guid: link,
-            pubDate: rssTime,
-            enclosure: {
-                url: enclosureUrl,
-                length: "0",
-                type: "image/png"
-            }
-        })
+            description: contentHtml.substring(0, 200),
+            content: fullContent,
+            author: [{ name: post.user }],
+            date: datetime ? new Date(datetime) : now,
+            image: enclosureUrl
+        });
     }
 
-
-    const channel = {
-        title: `${ID} - Kemono`,
-        description: `${ID} - Kemono`,
-        link: `https://kemono.cr/${ID}`,
-        image: "https://kemono.cr/static/apple-touch-icon.png"
-    }
-
-    return itemsToRss(items, channel)
+    return feed.rss2();
 }
