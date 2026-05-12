@@ -1,49 +1,49 @@
-import { itemsToRss } from "../rss.js";
+import { Feed } from "feed";
 
 export async function nhentai(query = "chinese") {
-    // 构造 API 查询参数，末尾强制加 +chinese
     const apiQuery = `${query}+chinese`;
-
-    // 显示名称：将 + 替换为空格
     const displayName = query.replace(/\+/g, ' ');
+    const now = new Date();
 
-    const items = [];
-    const seen = new Set(); // 去重
-    const now = Date.now();
+    const feed = new Feed({
+        title: `${displayName} - nhentai`,
+        description: `nhentai : ${displayName}`,
+        id: `https://nhentai.net/search/?q=${encodeURIComponent(apiQuery)}`,
+        link: `https://nhentai.net/search/?q=${encodeURIComponent(apiQuery)}`,
+        language: "zh",
+        image: "https://nhentai.net/favicon.ico",
+        copyright: "All rights reserved",
+        updated: now,
+        generator: "Feed for Node.js",
+        author: {
+            name: displayName,
+            link: `https://nhentai.net/search/?q=${encodeURIComponent(apiQuery)}`
+        }
+    });
 
-    // 先请求第一页，获取总页数
+    const seen = new Set();
+
     const firstResp = await fetch(`https://nhentai.net/api/v2/search?query=${encodeURIComponent(apiQuery)}&page=1`);
-    if (!firstResp.ok) {
-        throw new Error(`nhentai API 请求失败: ${firstResp.status}`);
-    }
+    if (!firstResp.ok) throw new Error(`nhentai API 请求失败: ${firstResp.status}`);
     const firstData = await firstResp.json();
-
     const totalPages = firstData.num_pages || 1;
 
-    // 遍历所有页
     for (let page = 1; page <= totalPages; page++) {
         const resp = await fetch(`https://nhentai.net/api/v2/search?query=${encodeURIComponent(apiQuery)}&page=${page}`);
-        if (!resp.ok) {
-            console.warn(`请求第 ${page} 页失败: ${resp.status}, 跳过`);
-            continue;
-        }
+        if (!resp.ok) continue;
         const data = await resp.json();
         if (!data.result || data.result.length === 0) continue;
 
-        for (let i = 0; i < data.result.length; i++) {
-            const item = data.result[i];
-
+        for (const item of data.result) {
             if (item.blacklisted) continue;
 
             const gid = item.id;
             const mediaId = item.media_id;
-
             const japaneseTitle = item.japanese_title || "";
             const englishTitle = item.english_title || "";
+            const displayTitle = japaneseTitle || englishTitle || `Gallery ${gid}`;
 
-            // RSS 标题：日语优先
-            let displayTitle = japaneseTitle || englishTitle || `Gallery ${gid}`;
-
+            // 原有逻辑保留：正则过滤
             const normalizedTitle = displayTitle
                 .replace(/\s*\[(無修正|DL版|中国(翻訳|汉化)|ページ欠落|ver\.\d+|C\d+|AI翻译|AI generated)\]\s*/gi, ' ')
                 .replace(/\s*\[.*?\]\s*$/, '')
@@ -54,40 +54,54 @@ export async function nhentai(query = "chinese") {
             if (seen.has(normalizedTitle)) continue;
             seen.add(normalizedTitle);
 
-            const pages = item.num_pages || 0;
+            const pagesCount = item.num_pages || 0;
             const cover = `https://t.nhentai.net/${item.thumbnail}`;
 
-            const images = [];
-            for (let p = 1; p <= pages; p++) {
-                images.push(`https://i.nhentai.net/galleries/${mediaId}/${p}.webp`);
+            // 原有逻辑保留：标题逻辑
+            const titleInDesc = (englishTitle && englishTitle.includes('|'))
+                ? englishTitle.split('|').pop().trim()
+                : englishTitle;
+
+            const summaryDescription =(titleInDesc || "（无标题）").trim();
+
+            // 1. 构建 Content (Description 放在顶部 + 死循环重试图片)
+            const images = [`<p>${summaryDescription}</p>`];
+            for (let p = 1; p <= pagesCount; p++) {
+                const base = `https://i.nhentai.net/galleries/${mediaId}/${p}`;
+                const webp = `${base}.webp`;
+                const jpg = `${base}.jpg`;
+                const png = `${base}.png`;
+
+                images.push(`
+<img 
+    src="${webp}" 
+    alt="P${p}/${pagesCount}" 
+    onerror="
+        if (this.src.endsWith('.webp')) {
+            this.src = '${jpg}';
+        } else if (this.src.endsWith('.jpg')) {
+            this.src = '${png}';
+        } else if (this.src.endsWith('.png')) {
+            this.src = '${webp}'; 
+        }
+    " 
+/>`);
             }
 
-            const desc = `<![CDATA[
-日语标题: ${japaneseTitle || "（无）"}<br/>
-英语标题: ${englishTitle || "（无）"}<br/>
-页数: ${pages}<br/>
-<img src="${cover}" alt="cover" /><br/>
-${images.map(url => `<img src="${url}" alt="page" />`).join("<br/>\n")}
-]]>`;
+            const fullContent = images.join("");
 
-            items.push({
+            // 3. 添加到 Feed
+            feed.addItem({
                 title: displayTitle,
+                id: String(gid),
                 link: `https://nhentai.net/g/${gid}/`,
-                description: desc,
-                author: "nhentai",
-                enclosure: { url: cover, type: "image/jpeg", length: "0" },
-                guid: String(gid),
-                pubDate: new Date(now - (items.length) * 1000).toUTCString(),
+                description: fullContent, // 已删掉总页数信息
+                author: [{name: "nhentai"}],
+                date: new Date(now.getTime() - feed.items.length * 1000),
+                image: cover
             });
         }
     }
 
-    const channel = {
-        title: `${displayName} - nhentai`,
-        description: `nhentai 搜索: ${displayName}`,
-        link: `https://nhentai.net/search/?q=${encodeURIComponent(apiQuery)}`,
-        image: "https://nhentai.net/favicon.ico"
-    };
-
-    return itemsToRss(items, channel);
+    return feed.rss2();
 }
