@@ -4,6 +4,7 @@ import { kemono } from "./routers/kemono.js"
 import { cospuri } from "./routers/cospuri.js"
 import { fellatiojapan } from "./routers/fellatiojapan.js"
 import { nhentai } from "./routers/nhentai.js"
+import { raw } from "./routers/raw.js"     // 新增
 
 const funcs = {
     dlsite,
@@ -11,7 +12,8 @@ const funcs = {
     kemono,
     cospuri,
     fellatiojapan,
-    nhentai
+    nhentai,
+    raw                                      // 新增
 }
 
 export default {
@@ -26,35 +28,15 @@ export default {
             return new Response("缺少路径参数", { status: 400 })
         }
 
-        // rss 路由
+        // rss / raw 路由
         const func = funcs[mode]
 
         if (typeof func === "function") {
             const workerUrl = url.origin
-            const rss = await func(value, workerUrl)
-            return new Response(rss, {
-                headers: {
-                    "content-type": "application/rss+xml; charset=utf-8"
-                }
-            })
+            const result = await func(value, workerUrl, request)   // 传入原始 request 用于透传 headers
+            return result
         }
 
-        // 未知路径按 raw 处理
-        const rawUrl = decodeURIComponent(path)
-        const resp = await fetch(rawUrl, {
-            headers: {
-                "User-Agent": request.headers.get("User-Agent") || "",
-                "Accept": request.headers.get("Accept") || "*/*",
-                "Accept-Language": request.headers.get("Accept-Language") || "",
-                "Referer": rawUrl,
-                "Origin": new URL(rawUrl).origin,
-            }
-        })
-        const html = await resp.text()
-        return new Response(html, {
-            headers: {
-                "content-type": "text/plain; charset=utf-8"
-            }
-        })
+        return new Response("未知路由", { status: 404 })
     }
 }
