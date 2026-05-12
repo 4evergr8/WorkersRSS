@@ -1,5 +1,5 @@
 import * as cheerio from "cheerio"
-import {itemsToRss} from "../rss.js";
+import { Feed } from "feed";
 
 export async function cospuri(model) {
     const resp = await fetch(`https://cospuri.com/model/${model}`)
@@ -8,12 +8,24 @@ export async function cospuri(model) {
     const $ = cheerio.load(html)
     const title = $('div.name-en').text().trim()
 
-
-    const items = []
-    const now = Date.now()
+    const now = new Date();
+    const feed = new Feed({
+        title: `${title} - Cospuri`,
+        description: `${title} - Cospuri`,
+        id: `https://cospuri.com/model/${model}`,
+        link: `https://cospuri.com/model/${model}`,
+        language: "zh",
+        image: "https://cdn.cospuri.com/img/banner_1.jpg",
+        updated: now,
+        generator: "Feed for Node.js",
+        author: {
+            name: "Cospuri",
+            link: "https://cospuri.com"
+        }
+    });
 
     $(".scene.cosplay").each((i, el) => {
-        const title = $(el).find(".model a").first().text().trim() || "Cospuri Scene"
+        const itemTitle = $(el).find(".model a").first().text().trim() || "Cospuri Scene"
         const link = $(el).find("a").first().attr("href") || ""
         const author = $(el).find(".model a").first().text().trim() || ""
 
@@ -29,29 +41,22 @@ export async function cospuri(model) {
         // 标签
         const tags = $(el).find(".tags a").map((j, tagEl) => $(tagEl).text().trim()).get().join(", ")
 
-        const desc = `<![CDATA[
-模特: ${author}<br/>
-标签: ${tags}<br/>
+        const summaryDescription = `模特: ${author} | 标签: ${tags}`;
+        const fullContent = `
+<p>${summaryDescription}</p>
 <img src="${image}" />
-]]>`
+`;
 
-        items.push({
-            title,
+        feed.addItem({
+            title: itemTitle,
+            id: link,
             link: link.startsWith("http") ? link : "https://www.cospuri.com" + link,
-            description: desc,
-            author,
-            enclosure: image ? {url: image, type: "image/jpeg", length: "0"} : undefined,
-            guid: link,
-            pubDate: new Date(now - i * 1000).toUTCString()
+            description: fullContent,
+            author: [{ name: author }],
+            date: new Date(now.getTime() - i * 1000),
+            image: image
         })
     })
 
-    const channel = {
-        title: `${title} - Cospuri`,
-        description: `${title} - Cospuri`,
-        link: `https://cospuri.com/model/${model}`,
-        image: "https://cdn.cospuri.com/img/banner_1.jpg"
-    }
-
-    return itemsToRss(items, channel)
+    return feed.rss2()
 }
