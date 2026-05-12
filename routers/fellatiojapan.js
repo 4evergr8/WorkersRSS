@@ -1,5 +1,5 @@
 import * as cheerio from "cheerio"
-import {itemsToRss} from "../rss.js";
+import { Feed } from "feed";
 
 export async function fellatiojapan(model) {
     const resp = await fetch(`https://fellatiojapan.com/en/girl/${model}`)
@@ -8,8 +8,21 @@ export async function fellatiojapan(model) {
 
     const pagetitle = $("#content h1").first().text().trim()
 
-    const items = []
-    const now = Date.now()
+    const now = new Date();
+    const feed = new Feed({
+        title: `${pagetitle} - Fellatio Japan`,
+        description: `${pagetitle} - Fellatio Japan`,
+        id: `https://fellatiojapan.com/en/girl/${model}`,
+        link: `https://fellatiojapan.com/en/girl/${model}`,
+        language: "en",
+        image: "https://cdn.fellatiojapan.com/img/svg2.png",
+        updated: now,
+        generator: "Feed for Node.js",
+        author: {
+            name: "Fellatio Japan",
+            link: "https://fellatiojapan.com"
+        }
+    });
 
     $(".scene-obj").each((i, el) => {
         const title = $(el).find(".sGirl a").first().text().trim() || "Fellatio Japan Scene"
@@ -29,32 +42,24 @@ export async function fellatiojapan(model) {
         const tags = $(el).find(".data.dark a").map((j, tagEl) => $(tagEl).text().trim()).get().join(", ")
 
         // 日期
-        const date = $(el).find(".sDate").text().trim()
+        const dateStr = $(el).find(".sDate").text().trim()
 
-        const desc = `<![CDATA[
-模特: ${authors}<br/>
-标签: ${tags}<br/>
-日期: ${date}<br/>
+        const summaryDescription = `模特: ${authors} | 标签: ${tags} | 日期: ${dateStr}`;
+        const fullContent = `
+<p>${summaryDescription}</p>
 <img src="${image}" />
-]]>`
+`;
 
-        items.push({
-            title,
-            link: link.startsWith("http") ? link : "https://fellatiojapan.com/en/girl/" + model,
-            description: desc,
-            author:authors,
-            enclosure: image ? {url: image, type: "image/jpeg", length: "0"} : undefined,
-            guid: image,
-            pubDate: date ? new Date(date).toUTCString() : new Date(now - i * 1000).toUTCString()
+        feed.addItem({
+            title: title,
+            id: image || link,
+            link: link.startsWith("http") ? link : `https://fellatiojapan.com${link}`,
+            description: fullContent,
+            author: [{ name: authors }],
+            date: dateStr ? new Date(dateStr) : new Date(now.getTime() - i * 1000),
+            image: image
         })
     })
 
-    const channel = {
-        title: `${pagetitle} - Fellatio Japan`,
-        description: `${pagetitle} - Fellatio Japan`,
-        link: `https://fellatiojapan.com/en/girls/${model}`,
-        image: "https://cdn.fellatiojapan.com/img/svg2.png"
-    }
-
-    return itemsToRss(items, channel)
+    return feed.rss2()
 }
