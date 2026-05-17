@@ -54,7 +54,7 @@ https://你的workers域名/?<平台>=<ID或路径>
   `https://rss.4evergr8.workers.dev/?dlsite=RG51931`
 
 - Nhentai 中文搜索：  
-  `https://rss.4evergr8.workers.dev/?nhentai=[MIGNON WORKS (mignon)]`
+  `https://rss.4evergr8.workers.dev/?nhentai=artist/mignon`
 
 想抓任意网页？直接用 raw ：
 
