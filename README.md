@@ -9,13 +9,10 @@
 ## 项目碎碎念😅
 
 我一直认为 RSS 属于那种「不是每天都看，但是偶尔会去确认一下」的内容。  
-结果迫于 RSSHub 没有我想要的网站，也没找到稳定可靠的公共节点，又不想自己花钱买服务器折腾，就硬着头皮自己写了一个……  
-
-写到一半才发现网上已经有更成熟的实现了😂，但箭在弦上不得不发，还是咬牙写完了。  
-好在最终效果还不错，至少对我自己够用了！
+结果迫于 RSSHub 没有我想要的网站，也没找到稳定可靠的公共节点，又不想自己花钱买服务器折腾……  
 
 **想要添加新网站？其实超级简单** ✨  
-用 `?raw=` 参数把目标网址丢进去，先访问一下看看有没有风控、能不能正常加载内容。  
+用 `/raw/https://xxx.com` 参数把目标网址丢进去，先访问一下看看有没有风控、能不能正常加载内容。  
 把项目地址 + 项目里已有的任何一个网站的解析代码一起丢给AI，它基本就能帮你写出对应的解析逻辑。  
 
 多数网站支持直接调用 API（速度快、干净），少数顽固的只能老老实实解析网页 HTML。
@@ -54,13 +51,10 @@ https://你的workers域名/?<平台>=<ID或路径>
   `https://rss.4evergr8.workers.dev/?github=4evergr8/atoolbox`
 
 - DLsite 新作：  
-  `https://rss.4evergr8.workers.dev/dlsite/RG51931`
-
-- Kemono Fanbox 用户：  
-  `https://rss.4evergr8.workers.dev/kemono/fanbox/user/3316400`
+  `https://rss.4evergr8.workers.dev/?dlsite=RG51931`
 
 - Nhentai 中文搜索：  
-  `https://rss.4evergr8.workers.dev/nhentai/chinese`
+  `https://rss.4evergr8.workers.dev/?nhentai=[MIGNON WORKS (mignon)]`
 
 想抓任意网页？直接用 raw ：
 
