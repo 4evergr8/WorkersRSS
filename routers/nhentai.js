@@ -28,8 +28,17 @@ export async function nhentai(input = "artist/mda-starou") {
     const perPage = 100;
     let hasMore = true;
 
+    const MUST_TAG = 29963;
+
+    const cleanText = (text = "") =>
+        text
+            .replace(/[\x00-\x1F\x7F-\x9F]/g, "")
+            .trim();
+
     while (hasMore) {
-        const url = `https://nhentai.net/api/v2/galleries/tagged?tag_id=${tagId}&sort=date&page=${page}&per_page=${perPage}`;
+        const url =
+            `https://nhentai.net/api/v2/galleries/tagged` +
+            `?tag_id=${tagId}&sort=date&page=${page}&per_page=${perPage}`;
 
         const resp = await fetch(url);
 
@@ -44,37 +53,43 @@ export async function nhentai(input = "artist/mda-starou") {
         }
 
         for (const item of data.result) {
-            const MUST_TAG = 29963;
 
-            if (!item.tag_ids?.includes(tagId)) continue;
-            if (!item.tag_ids?.includes(MUST_TAG)) continue;
+            // 必须包含中文标签
+            if (!item.tag_ids?.includes(MUST_TAG)) {
+                continue;
+            }
+
 
             const gid = item.id;
             const mediaId = item.media_id;
 
-            const japaneseTitle = (item.japanese_title || "").trim();
-            const englishTitle = (item.english_title || "").trim();
+            const japaneseTitle = cleanText(
+                item.japanese_title || ""
+            );
 
-            // item标题：优先日语，其次英语
-            const title = japaneseTitle || englishTitle;
+            const englishTitle = cleanText(
+                item.english_title || ""
+            );
 
-            // 去重/guid用
+            // item.title
+            const title =
+                japaneseTitle ||
+                englishTitle;
+
+            // 去重/guid
             const uniqueId = title
                 .replace(/\[.*?\]/g, "")
                 .replace(/\(.*?\)/g, "")
                 .replace(/\s/g, "")
                 .replace(/\p{P}/gu, "")
+                .replace(/[\x00-\x1F\x7F-\x9F]/g, "")
                 .toLowerCase();
 
-            if (seen.has(uniqueId)) continue;
+            if (seen.has(uniqueId)) {
+                continue;
+            }
+
             seen.add(uniqueId);
-
-            const pagesCount = item.num_pages || 0;
-
-            const coverExt =
-                item.thumbnail
-                    ?.match(/\.(webp|jpg|png)$/i)?.[1]
-                    ?.toLowerCase() || "jpg";
 
             // content标题
             let contentTitle = "";
@@ -92,21 +107,32 @@ export async function nhentai(input = "artist/mda-starou") {
                 contentTitle = japaneseTitle;
             }
 
+            contentTitle = cleanText(contentTitle);
+
+            const pagesCount = item.num_pages || 0;
+
+            const coverExt =
+                item.thumbnail
+                    ?.match(/\.(webp|jpg|png)$/i)?.[1]
+                    ?.toLowerCase() || "jpg";
+
             const images = [`<p>${contentTitle}</p>`];
 
             for (let p = 1; p <= pagesCount; p++) {
-                const imgUrl = `https://i.nhentai.net/galleries/${mediaId}/${p}.${coverExt}`;
+                const imgUrl =
+                    `https://i.nhentai.net/galleries/${mediaId}/${p}.${coverExt}`;
+
                 images.push(`<img src="${imgUrl}" />`);
             }
 
             feed.addItem({
-                title: title,
-                guid: uniqueId,
+                title,
+                id: uniqueId,
                 link: `https://nhentai.net/g/${gid}/`,
                 content: images.join(""),
-                author:  [{name: input}],
                 date: new Date(1600000000000 + gid * 1000),
-                enclosure: `https://i.nhentai.net/galleries/${mediaId}/1.${coverExt}`
+                enclosure: `https://i.nhentai.net/galleries/${mediaId}/1.${coverExt}`,
+                author:  [{name: input}]
             });
         }
 
