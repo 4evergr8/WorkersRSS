@@ -1,40 +1,65 @@
 import { dlsite } from "./routers/dlsite.js"
 import { github } from "./routers/github.js"
-import { kemono } from "./routers/kemono.js"
-import { cospuri } from "./routers/cospuri.js"
-import { fellatiojapan } from "./routers/fellatiojapan.js"
 import { nhentai } from "./routers/nhentai.js"
-import { raw } from "./routers/raw.js"     // 新增
+import { raw } from "./routers/raw.js"
 
 const funcs = {
     dlsite,
     github,
-    kemono,
-    cospuri,
-    fellatiojapan,
     nhentai,
-    raw                                      // 新增
+    raw
 }
 
 export default {
     async fetch(request) {
         const url = new URL(request.url)
-        const path = url.pathname.replace(/^\/+|\/+$/g, "")
-        const parts = path.split("/")
-        const mode = parts[0]
-        const value = decodeURIComponent(parts.slice(1).join("/"))
+        const params = url.searchParams
 
-        if (!mode || !value) {
-            return new Response("缺少路径参数", { status: 400 })
+        let mode = null
+        let value = null
+
+        for (const key of Object.keys(funcs)) {
+            if (params.has(key)) {
+                mode = key
+                value = params.get(key)
+                break
+            }
         }
 
-        // rss / raw 路由
+        if (!mode || !value) {
+            return new Response("缺少参数", { status: 400 })
+        }
+
         const func = funcs[mode]
 
         if (typeof func === "function") {
             const workerUrl = url.origin
-            const result = await func(value, workerUrl, request)   // 传入原始 request 用于透传 headers
-            return result
+
+            try {
+                const result = await func(value, workerUrl, request)
+
+                if (result instanceof Response) {
+                    return result
+                }
+
+                if (typeof result === "string") {
+                    return new Response(result, {
+                        headers: {
+                            "content-type": "application/xml; charset=utf-8"
+                        }
+                    })
+                }
+
+                return new Response("子函数返回类型错误", { status: 500 })
+
+            } catch (err) {
+                return new Response(String(err?.stack || err), {
+                    status: 500,
+                    headers: {
+                        "content-type": "text/plain; charset=utf-8"
+                    }
+                })
+            }
         }
 
         return new Response("未知路由", { status: 404 })
