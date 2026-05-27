@@ -1,6 +1,6 @@
 import { Feed } from "feed";
 
-export async function nhentai(input = "artist/mda-starou") {
+export async function nhentai(input) {
     const now = new Date();
 
     const tagResp = await fetch(
@@ -96,7 +96,7 @@ export async function nhentai(input = "artist/mda-starou") {
                 englishTitle;
 
             const uniqueId = title
-                .replace(/\[.*?\]/g, "")
+                .replace(/\[.*?]/g, "")
                 .replace(/\(.*?\)/g, "")
                 .replace(/\s/g, "")
                 .replace(/\p{P}/gu, "")
@@ -139,12 +139,12 @@ export async function nhentai(input = "artist/mda-starou") {
                 const imgUrl =
                     `https://i.nhentai.net/galleries/${mediaId}/${p}.${coverExt}`;
 
-                images.push(`<img src="${imgUrl}" />`);
+                images.push(`<img src="${imgUrl}"  alt="P${p}/${pagesCount}"/>`);
             }
 
             const feedItem = {
                 title,
-                id: uniqueId,
+                id: `${uniqueId}${gid}`,
                 link: `https://nhentai.net/g/${gid}/`,
                 content: images.join(""),
                 date: new Date(1600000000000 + gid * 1000),
