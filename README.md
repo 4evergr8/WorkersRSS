@@ -12,7 +12,7 @@
 结果迫于 RSSHub 没有我想要的网站，也没找到稳定可靠的公共节点，又不想自己花钱买服务器折腾……  
 
 **想要添加新网站？其实超级简单** ✨  
-用 `/raw/https://xxx.com` 参数把目标网址丢进去，先访问一下看看有没有风控、能不能正常加载内容。  
+用 `/raw=https://xxx.com` 参数把目标网址丢进去，先访问一下看看有没有风控、能不能正常加载内容。  
 把项目地址 + 项目里已有的任何一个网站的解析代码一起丢给AI，它基本就能帮你写出对应的解析逻辑。  
 
 多数网站支持直接调用 API（速度快、干净），少数顽固的只能老老实实解析网页 HTML。
@@ -34,7 +34,7 @@
 部署后得到你的专属 RSS 地址，例如：
 
 ```
-https://rss.你的名字.workers.dev
+https://rss.ID.workers.dev
 ```
 
 ## 🎯 食用方法
@@ -42,19 +42,24 @@ https://rss.你的名字.workers.dev
 基本格式（直接浏览器打开或丢进 RSS 阅读器）：
 
 ```
-https://你的workers域名/?<平台>=<ID或路径>
+https://你的workers域名/?<平台>=<参数>
 ```
 
-真实例子 🔥：
+已有路由：
 
 - GitHub 仓库更新：  
   `https://rss.4evergr8.workers.dev/?github=4evergr8/atoolbox`
 
-- DLsite 新作：  
+- DLsite 社团新作：  
   `https://rss.4evergr8.workers.dev/?dlsite=RG51931`
 
-- Nhentai 中文搜索：  
+- Nhentai 标签检索：  
   `https://rss.4evergr8.workers.dev/?nhentai=artist/mignon`
+
+- iTunes 歌手专辑：  
+  `https://rss.4evergr8.workers.dev/?itunes=473219952`
+  `https://rss.4evergr8.workers.dev/?itunes=lukasgraham`
+
 
 想抓任意网页？直接用 raw ：
 
