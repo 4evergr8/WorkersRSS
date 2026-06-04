@@ -23,7 +23,8 @@ function getBucket(rj) {
 }
 
 // ===== 主函数 =====
-export async function dlsite(RG) {
+export async function dlsite(RG,baseUrl) {
+    const currentRssUrl = `${baseUrl}?dlsite=${RG}`;
     const resp = await fetch(
         `https://www.dlsite.com/maniax/circle/profile/=/maker_id/${RG}.html/per_page/30`
     );
@@ -43,6 +44,9 @@ export async function dlsite(RG) {
         link: `https://www.dlsite.com/maniax/circle/profile/=/maker_id/${RG}.html`,
         image: "https://www.dlsite.com/images/web/common/favicon.ico",
         updated: now,
+        feedLinks: {
+            rss: currentRssUrl
+        },
     });
 
     $("#search_result_img_box > li.search_result_img_box_inner").each((i, el) => {
