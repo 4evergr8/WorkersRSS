@@ -1,7 +1,8 @@
 import { Feed } from "feed";
 
-export async function nhentai(input) {
+export async function nhentai(input,baseUrl) {
     const now = new Date();
+    const currentRssUrl = `${baseUrl}?nhentai=${input}`;
 
     const tagResp = await fetch(
         `https://nhentai.net/api/v2/tags/${input}`
@@ -20,6 +21,9 @@ export async function nhentai(input) {
         link: `https://nhentai.net/${input}/`,
         image: "https://nhentai.net/favicon.png",
         updated: now,
+        feedLinks: {
+            rss: currentRssUrl
+        },
     });
 
     // 中文
