@@ -1,9 +1,10 @@
 import { Feed } from "feed";
 
-export async function github(REP) {
+export async function github(REP,baseUrl) {
     const apiUrl = `https://api.github.com/repos/${REP}/releases`;
+    const currentRssUrl = `${baseUrl}?github=${REP}`;
 
-    console.log("github:", REP);
+
 
     const resp = await fetch(apiUrl, {
         headers: {
@@ -27,6 +28,9 @@ export async function github(REP) {
         link: `https://github.com/${REP}/releases`,
         image: "https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png",
         updated: now,
+        feedLinks: {
+            rss: currentRssUrl
+        },
     });
 
     for (const r of releases) {
