@@ -1,7 +1,6 @@
 import { dlsite } from "./routers/dlsite.js"
 import { github } from "./routers/github.js"
 import { nhentai } from "./routers/nhentai.js"
-import { ytmusic } from "./routers/ytmusic.js"
 import { itunes } from "./routers/itunes.js";
 
 // 统一的 CORS 响应头配置
@@ -38,13 +37,7 @@ export default {
             value = paramsArray[0][1]
         }
 
-        // 校验是否成功拿到第一组参数和值
-        if (!mode || !value) {
-            return new Response("缺少参数", {
-                status: 400,
-                headers: corsHeaders
-            })
-        }
+
 
         // 2. 如果第一组参数是 raw 代理模式，直接在主函数中处理
         if (mode === "raw") {
@@ -81,8 +74,8 @@ export default {
             })
         }
 
-        // 3. 处理其它常规子路由 (dlsite, github, nhentai, ytmusic, itunes)
-        const funcs = { dlsite, github, nhentai, ytmusic, itunes }
+
+        const funcs = { dlsite, github, nhentai, itunes }
         const func = funcs[mode]
 
         if (typeof func === "function") {
@@ -99,7 +92,7 @@ export default {
         }
 
         return new Response("未知路由", {
-            status: 404,
+            status: 200,
             headers: corsHeaders
         })
     }
