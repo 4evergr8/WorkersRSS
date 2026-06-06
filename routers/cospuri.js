@@ -1,62 +1,168 @@
-import * as cheerio from "cheerio"
-import { Feed } from "feed";
+import * as cheerio from "cheerio";
+import {Feed} from "feed";
 
-export async function cospuri(model) {
-    const resp = await fetch(`https://cospuri.com/model/${model}`)
-    console.log("cospuri:", model)
-    const html = await resp.text()
-    const $ = cheerio.load(html)
-    const title = $('div.name-en').text().trim()
+function hashCode(str) {
+    let hash = 0;
+
+    for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash |= 0;
+    }
+
+    return Math.abs(hash);
+}
+
+function buildStableDate(id) {
+
+    const num =
+        parseInt(
+            ((id.match(/^\d+/)?.[0] || "")
+                .slice(0, 4))
+                .slice(0, 3),
+            10
+        );
+
+    const base = new Date(Date.UTC(2024, 0, 1));
+
+    base.setUTCDate(base.getUTCDate() + num);
+
+    return base;
+}
+
+export async function cospuri(model, baseUrl) {
+
+    const currentRssUrl = `${baseUrl}?cospuri=${encodeURIComponent(model)}`;
+
+    const profileUrl =
+        `https://www.cospuri.com/model/${encodeURIComponent(model)}`;
+
+    const resp = await fetch(profileUrl);
+
+    const html = await resp.text();
+
+    const $ = cheerio.load(html);
 
     const now = new Date();
+
     const feed = new Feed({
-        title: `${title} - Cospuri`,
-        description: `${title} - Cospuri`,
-        id: `https://cospuri.com/model/${model}`,
-        link: `https://cospuri.com/model/${model}`,
-        language: "zh",
-        image: "https://cdn.cospuri.com/img/banner_1.jpg",
+        title: `${model} - Cospuri`,
+        id: profileUrl,
+        link: profileUrl,
+        image: "https://www.cospuri.com/favicon.svg",
         updated: now,
-        generator: "Feed for Node.js",
-        author: {
-            name: "Cospuri",
-            link: "https://cospuri.com"
+        feedLinks: {
+            rss: currentRssUrl
         }
     });
 
-    $(".scene.cosplay").each((i, el) => {
-        const itemTitle = $(el).find(".model a").first().text().trim() || "Cospuri Scene"
-        const link = $(el).find("a").first().attr("href") || ""
-        const author = $(el).find(".model a").first().text().trim() || ""
+    $(".scene").each((i, el) => {
 
-        // 主图（背景图）
-        let image = ""
-        const bgStyle = $(el).find(".scene-thumb").attr("style") || ""
-        const match = bgStyle.match(/url\(([^)]+)\)/)
-        if (match) {
-            image = match[1].replace(/['"]/g, "")
-            if (!image.startsWith("http")) image = "https://www.cospuri.com" + image
-        }
+        const thumbDiv =
+            $(el).find(".scene-thumb");
 
-        // 标签
-        const tags = $(el).find(".tags a").map((j, tagEl) => $(tagEl).text().trim()).get().join(", ")
+        const style =
+            thumbDiv.attr("style") || "";
 
-        const summaryDescription = `模特: ${author} | 标签: ${tags}`;
-        const fullContent = `
+        const previewImage =
+            style.match(/url\((.*?)\)/)?.[1] || "";
+
+        const sampleLink =
+            thumbDiv.find("a").attr("href") || "";
+
+        const fullLink =
+            "https://www.cospuri.com" + sampleLink;
+
+        const sampleId =
+            new URLSearchParams(
+                sampleLink.split("?")[1]
+            ).get("id") || "";
+
+        const hoverVideo =
+            thumbDiv.find(".scene-hover")
+                .attr("data-path") || "";
+
+        const modelName =
+            $(el)
+                .find(".model > a")
+                .first()
+                .text()
+                .trim();
+
+        const channel =
+            $(el)
+                .find(".channel")
+                .text()
+                .trim();
+
+        const length =
+            $(el)
+                .find(".length strong")
+                .text()
+                .trim();
+
+        const photos =
+            $(el)
+                .find(".photos strong")
+                .text()
+                .trim();
+
+        const tags = [];
+
+        $(el)
+            .find(".tags .tag")
+            .each((_, tag) => {
+                tags.push($(tag).text().trim());
+            });
+
+        const title =
+            `${modelName} ${sampleId}`;
+
+        const summaryDescription =
+            `模特: ${modelName} | 频道: ${channel} | 时长: ${length}min | 图片: ${photos}pics | 标签: ${tags.join(", ")}`;
+
+        const content = `
 <p>${summaryDescription}</p>
-<img src="${image}" />
+
+
+
+<p>
+预览图片
+</p>
+
+<img src="${previewImage}" />
+
+<p>
+预览视频
+</p>
+
+<video controls preload="none">
+    <source src="${hoverVideo}" type="video/mp4">
+</video>
 `;
 
         feed.addItem({
-            title: itemTitle,
-            id: link,
-            link: link.startsWith("http") ? link : "https://www.cospuri.com" + link,
-            description: fullContent,
-            author: [{ name: author }],
-            date: new Date(now.getTime() - i * 1000),
-            image: image
-        })
-    })
+            title,
+            id: fullLink,
+            link: fullLink,
+            description: summaryDescription,
+            content,
 
-    return feed.rss2()
+            author: [
+                {
+                    name: modelName
+                }
+            ],
+
+            date: buildStableDate(sampleId),
+
+            image: previewImage,
+
+            enclosure: {
+                url: previewImage,
+                type: "image/jpeg"
+            }
+        });
+    });
+
+    return feed.rss2();
 }
