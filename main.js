@@ -1,7 +1,10 @@
-import { dlsite } from "./routers/dlsite.js"
-import { github } from "./routers/github.js"
-import { nhentai } from "./routers/nhentai.js"
-import { itunes } from "./routers/itunes.js";
+import {dlsite} from "./routers/dlsite.js"
+import {github} from "./routers/github.js"
+import {nhentai} from "./routers/nhentai.js"
+import {itunes} from "./routers/itunes.js";
+import {cospuri} from "./routers/cospuri.js";
+import {fellatiojapan} from "./routers/fellatiojapan.js";
+import {handjobjapan} from "./routers/handjobjapan.js";
 
 // 统一的 CORS 响应头配置
 const corsHeaders = {
@@ -36,7 +39,6 @@ export default {
             mode = paramsArray[0][0]
             value = paramsArray[0][1]
         }
-
 
 
         // 2. 如果第一组参数是 raw 代理模式，直接在主函数中处理
@@ -75,7 +77,7 @@ export default {
         }
 
 
-        const funcs = { dlsite, github, nhentai, itunes }
+        const funcs = {dlsite, github, nhentai, itunes, cospuri, fellatiojapan, handjobjapan}
         const func = funcs[mode]
 
         if (typeof func === "function") {
