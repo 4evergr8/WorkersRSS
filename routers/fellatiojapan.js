@@ -1,65 +1,129 @@
-import * as cheerio from "cheerio"
+import * as cheerio from "cheerio";
 import { Feed } from "feed";
 
-export async function fellatiojapan(model) {
-    const resp = await fetch(`https://fellatiojapan.com/en/girl/${model}`)
-    const html = await resp.text()
-    const $ = cheerio.load(html)
+export async function fellatiojapan(model, baseUrl) {
 
-    const pagetitle = $("#content h1").first().text().trim()
+    const currentRssUrl =
+        `${baseUrl}?fellatiojapan=${encodeURIComponent(model)}`;
+
+    const profileUrl =
+        `https://www.fellatiojapan.com/en/girl/${encodeURIComponent(model)}`;
+
+    const resp = await fetch(profileUrl);
+
+    const html = await resp.text();
+
+    const $ = cheerio.load(html);
 
     const now = new Date();
+
     const feed = new Feed({
-        title: `${pagetitle} - Fellatio Japan`,
-        description: `${pagetitle} - Fellatio Japan`,
-        id: `https://fellatiojapan.com/en/girl/${model}`,
-        link: `https://fellatiojapan.com/en/girl/${model}`,
-        language: "en",
-        image: "https://cdn.fellatiojapan.com/img/svg2.png",
+        title: `${model} - FellatioJapan`,
+        id: profileUrl,
+        link: profileUrl,
+        image: "https://www.fellatiojapan.com/favicon.ico",
         updated: now,
-        generator: "Feed for Node.js",
-        author: {
-            name: "Fellatio Japan",
-            link: "https://fellatiojapan.com"
+        feedLinks: {
+            rss: currentRssUrl
         }
     });
 
     $(".scene-obj").each((i, el) => {
-        const title = $(el).find(".sGirl a").first().text().trim() || "Fellatio Japan Scene"
-        const link = $(el).find(".scene-top").attr("href") || ""
-        const authors = $(el).find(".sGirl a").map((i, a) => $(a).text().trim()).get().join(", ")
 
-        // 主图（背景图）
-        let image = ""
-        const bgStyle = $(el).find(".scene-img").attr("style") || ""
-        const match = bgStyle.match(/url\(([^)]+)\)/)
-        if (match) {
-            image = match[1].replace(/['"]/g, "")
-            if (!image.startsWith("http")) image = "https://cdn.fellatiojapan.com" + image
-        }
+        const sceneImg =
+            $(el).find(".scene-img");
 
-        // 标签
-        const tags = $(el).find(".data.dark a").map((j, tagEl) => $(tagEl).text().trim()).get().join(", ")
+        const style =
+            sceneImg.attr("style") || "";
 
-        // 日期
-        const dateStr = $(el).find(".sDate").text().trim()
+        const previewImage =
+            style.match(/url\((.*?)\)/)?.[1] || "";
 
-        const summaryDescription = `模特: ${authors} | 标签: ${tags} | 日期: ${dateStr}`;
-        const fullContent = `
+        const previewId =
+            sceneImg
+                .find(".scene-hover")
+                .attr("data-path") || "";
+
+        const previewVideo =
+            previewId
+                ? `https://cdn.fellatiojapan.com/preview/${previewId}/hover.mp4`
+                : "";
+
+        const girls =
+            $(el)
+                .find(".sGirl a")
+                .map((_, a) => $(a).text().trim())
+                .get();
+
+        const title =
+            previewId || girls.join(" & ");
+
+        const orangeText =
+            $(el)
+                .find(".data.orange")
+                .text()
+                .trim();
+
+        const duration =
+            orangeText.split("/")[0]?.trim() || "";
+
+        const photos =
+            orangeText.match(/(\d+)\s*photos/i)?.[1] || "";
+
+        const publishDate =
+            $(el)
+                .find(".sDate")
+                .text()
+                .trim();
+
+        const tags =
+            $(el)
+                .find(".data.dark a")
+                .map((_, a) => $(a).text().trim())
+                .get();
+
+        const summaryDescription =
+            `演员: ${girls.join(" & ")} | 时长: ${duration}${photos ? ` | 图片: ${photos}` : ""} | 日期: ${publishDate} | 标签: ${tags.join(", ")}`;
+
+        const content = `
 <p>${summaryDescription}</p>
-<img src="${image}" />
+
+<p>预览图片</p>
+
+<img src="${previewImage}" />
+
+${previewVideo ? `
+<p>预览视频</p>
+
+<video controls preload="none">
+    <source src="${previewVideo}" type="video/mp4">
+</video>
+` : ""}
 `;
 
         feed.addItem({
-            title: title,
-            id: image || link,
-            link: link.startsWith("http") ? link : `https://fellatiojapan.com${link}`,
-            description: fullContent,
-            author: [{ name: authors }],
-            date: dateStr ? new Date(dateStr) : new Date(now.getTime() - i * 1000),
-            image: image
-        })
-    })
+            title,
+            id: previewId || previewImage,
+            link: profileUrl,
+            description: summaryDescription,
+            content,
 
-    return feed.rss2()
+            author: girls.map(name => ({
+                name
+            })),
+
+            date: publishDate
+                ? new Date(`${publishDate}T00:00:00Z`)
+                : now,
+
+            image: previewImage,
+
+            enclosure: {
+                url: previewImage,
+                type: "image/jpeg"
+            }
+        });
+    });
+
+    return feed.rss2();
 }
