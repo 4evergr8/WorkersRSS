@@ -18,7 +18,7 @@ export async function fellatiojapan(model, baseUrl) {
     const now = new Date();
 
     const feed = new Feed({
-        title: `${model} - FellatioJapan`,
+        title: `${model} - Fellatio Japan`,
         id: profileUrl,
         link: profileUrl,
         image: "https://www.fellatiojapan.com/favicon.ico",
