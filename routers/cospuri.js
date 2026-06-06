@@ -48,7 +48,7 @@ export async function cospuri(model, baseUrl) {
         title: `${model} - Cospuri`,
         id: profileUrl,
         link: profileUrl,
-        image: "https://www.cospuri.com/favicon.svg",
+        image: "https://cospuriapp.com/favicon.png",
         updated: now,
         feedLinks: {
             rss: currentRssUrl
