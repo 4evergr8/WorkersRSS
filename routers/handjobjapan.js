@@ -39,7 +39,7 @@ const title =
     `${model} Scenes`;
 
 const feed = new Feed({
-    title: `${title} - HandJobJapan`,
+    title: `${model} - Handjob Japan`,
     id: profileUrl,
     link: profileUrl,
     image: "https://www.handjobjapan.com/favicon.ico",
