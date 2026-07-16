@@ -140,7 +140,6 @@ export async function cospuri(model, baseUrl) {
             content,
             date: buildStableDate(sampleId),
             description: summaryDescription,
-            enclosure: previewImage,
             id: fullLink,
             link: fullLink,
             title,
