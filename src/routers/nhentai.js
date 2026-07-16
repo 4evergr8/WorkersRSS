@@ -146,7 +146,6 @@ export async function nhentai(input,baseUrl) {
                 author: [{ name: input }],
                 content: images.join(""),
                 date: new Date(1600000000000 + gid * 1000),
-                enclosure: `https://i.nhentai.net/galleries/${mediaId}/1.${coverExt}`,
                 id: `${uniqueId}${gid}`,
                 link: `https://nhentai.net/g/${gid}/`,
                 title:title
