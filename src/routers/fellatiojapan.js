@@ -1,5 +1,5 @@
 import * as cheerio from "cheerio";
-import { Feed } from "feed";
+import {Feed} from "feed";
 
 export async function fellatiojapan(model, baseUrl) {
 
@@ -31,20 +31,18 @@ export async function fellatiojapan(model, baseUrl) {
             $(el).find(".scene-img");
 
         const style =
-            sceneImg.attr("style") || "";
+            sceneImg.attr("style");
 
         const previewImage =
-            style.match(/url\((.*?)\)/)?.[1] || "";
+            style.match(/url\((.*?)\)/)?.[1];
 
         const previewId =
             sceneImg
                 .find(".scene-hover")
-                .attr("data-path") || "";
+                .attr("data-path");
 
-        const previewVideo =
-            previewId
-                ? `https://cdn.fellatiojapan.com/preview/${previewId}/hover.mp4`
-                : "";
+        const previewVideo = `https://cdn.fellatiojapan.com/preview/${previewId}/hover.mp4`
+
 
         const girls =
             $(el)
@@ -62,10 +60,10 @@ export async function fellatiojapan(model, baseUrl) {
                 .trim();
 
         const duration =
-            orangeText.split("/")[0]?.trim() || "";
+            orangeText.split("/")[0]?.trim() ;
 
         const photos =
-            orangeText.match(/(\d+)\s*photos/i)?.[1] || "";
+            orangeText.match(/(\d+)\s*photos/i)?.[1] ;
 
         const publishDate =
             $(el)
@@ -80,7 +78,7 @@ export async function fellatiojapan(model, baseUrl) {
                 .get();
 
         const summaryDescription =
-            `演员: ${girls.join(" & ")} | 时长: ${duration}${photos ? ` | 图片: ${photos}` : ""} | 日期: ${publishDate} | 标签: ${tags.join(", ")}`;
+            `演员: ${girls.join(" & ")} | 时长: ${duration}| 图片: ${photos}| 日期: ${publishDate} | 标签: ${tags.join(", ")}`;
 
         const content = `
 <p>${summaryDescription}</p>
@@ -89,13 +87,13 @@ export async function fellatiojapan(model, baseUrl) {
 
 <img src="${previewImage}" />
 
-${previewVideo ? `
+
 <p>预览视频</p>
 
 <video controls preload="none">
     <source src="${previewVideo}" type="video/mp4">
 </video>
-` : ""}
+
 `;
 
         feed.addItem({
