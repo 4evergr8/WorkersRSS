@@ -50,7 +50,7 @@ https://rss-rss.pages.dev/?<平台>=<参数>
   `https://rss-rss.pages.dev/?nhentai=artist/mignon`
 
 - Pawchive 创作者：  
-  `https://rss-rss.pages.dev/?Pawchive=patreon/user/3295915`
+  `https://rss-rss.pages.dev/?pawchive=patreon/user/3295915`
 
 - iTunes 歌手专辑：  
   `https://rss-rss.pages.dev/?itunes=473219952`  
