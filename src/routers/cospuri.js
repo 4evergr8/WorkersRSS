@@ -45,21 +45,16 @@ export async function cospuri(model, baseUrl) {
     const now = new Date();
 
     const feed = new Feed({
-        title: `${model} - Cospuri`,
-        id: profileUrl,
-        link: profileUrl,
+        feedLinks: {rss: currentRssUrl},
         image: "https://cospuriapp.com/favicon.png",
+        link: profileUrl,
+        title: `Cospuri - ${model}`,
         updated: now,
-        feedLinks: {
-            rss: currentRssUrl
-        }
     });
 
     $(".scene").each((i, el) => {
-
         const thumbDiv =
             $(el).find(".scene-thumb");
-
         const style =
             thumbDiv.attr("style") || "";
 
@@ -141,26 +136,14 @@ export async function cospuri(model, baseUrl) {
 `;
 
         feed.addItem({
-            title,
+            author: [{name: modelName}],
+            content,
+            date: buildStableDate(sampleId),
+            description: summaryDescription,
+            enclosure: previewImage,
             id: fullLink,
             link: fullLink,
-            description: summaryDescription,
-            content,
-
-            author: [
-                {
-                    name: modelName
-                }
-            ],
-
-            date: buildStableDate(sampleId),
-
-            image: previewImage,
-
-            enclosure: {
-                url: previewImage,
-                type: "image/jpeg"
-            }
+            title,
         });
     });
 
