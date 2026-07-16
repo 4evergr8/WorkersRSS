@@ -5,6 +5,7 @@ import {itunes} from "./routers/itunes.js";
 import {cospuri} from "./routers/cospuri.js";
 import {fellatiojapan} from "./routers/fellatiojapan.js";
 import {handjobjapan} from "./routers/handjobjapan.js";
+import {pawchive} from "./routers/pawchive.js";
 
 // 统一的 CORS 响应头配置
 const corsHeaders = {
@@ -77,20 +78,31 @@ export default {
         }
 
 
-        const funcs = {dlsite, github, nhentai, itunes, cospuri, fellatiojapan, handjobjapan}
+        const funcs = {dlsite, github, nhentai, itunes, cospuri, fellatiojapan, handjobjapan, pawchive}
         const func = funcs[mode]
 
         if (typeof func === "function") {
-            // 向子函数多传入一个参数 baseUrl
-            const result = await func(value, baseUrl)
+            try {
+                const result = await func(value, baseUrl)
 
-            // 正确返回纯文本内容（RSS/XML）
-            return new Response(result, {
-                headers: {
-                    "content-type": "application/xml; charset=utf-8",
-                    ...corsHeaders
-                }
-            })
+                return new Response(result, {
+                    headers: {
+                        "content-type": "application/xml; charset=utf-8",
+                        ...corsHeaders
+                    }
+                })
+            } catch (error) {
+                return new Response(
+                    `错误: ${error.message || error}`,
+                    {
+                        status: 500,
+                        headers: {
+                            "content-type": "text/plain; charset=utf-8",
+                            ...corsHeaders
+                        }
+                    }
+                )
+            }
         }
 
         return new Response("未知路由", {
