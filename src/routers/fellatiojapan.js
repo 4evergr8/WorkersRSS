@@ -18,14 +18,11 @@ export async function fellatiojapan(model, baseUrl) {
     const now = new Date();
 
     const feed = new Feed({
-        title: `${model} - Fellatio Japan`,
-        id: profileUrl,
-        link: profileUrl,
+        feedLinks: {rss: currentRssUrl},
         image: "https://www.fellatiojapan.com/favicon.ico",
+        link: profileUrl,
+        title: `FellatioJapan - ${model}`,
         updated: now,
-        feedLinks: {
-            rss: currentRssUrl
-        }
     });
 
     $(".scene-obj").each((i, el) => {
@@ -102,26 +99,16 @@ ${previewVideo ? `
 `;
 
         feed.addItem({
-            title,
-            id: previewId || previewImage,
-            link: profileUrl,
-            description: summaryDescription,
-            content,
-
             author: girls.map(name => ({
                 name
             })),
-
-            date: publishDate
-                ? new Date(`${publishDate}T00:00:00Z`)
-                : now,
-
-            image: previewImage,
-
-            enclosure: {
-                url: previewImage,
-                type: "image/jpeg"
-            }
+            content,
+            date: new Date(`${publishDate}T00:00:00Z`),
+            description: summaryDescription,
+            enclosure: previewImage,
+            id: previewId,
+            link: profileUrl,
+            title,
         });
     });
 
