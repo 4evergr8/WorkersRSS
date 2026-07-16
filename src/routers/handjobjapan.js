@@ -5,7 +5,7 @@ function buildStableDate(id) {
 
     const num =
         parseInt(
-            ((id.match(/^\d+/)?.[0] || "")
+            ((id.match(/^\d+/)?.[0])
                 .slice(0, 4))
                 .slice(0, 3),
             10
@@ -35,7 +35,6 @@ export async function handjobjapan(model, baseUrl) {
     const now = new Date();
 
 
-
     const feed = new Feed({
         feedLinks: {rss: currentRssUrl},
         image: "https://www.handjobjapan.com/favicon.ico",
@@ -47,20 +46,17 @@ export async function handjobjapan(model, baseUrl) {
     $(".vthumb.item").each((i, el) => {
 
         const style =
-            $(el).attr("style") || "";
+            $(el).attr("style");
 
         const previewImage =
-            style.match(/url\((.*?)\)/)?.[1] || "";
+            style.match(/url\((.*?)\)/)?.[1];
 
         const previewId =
             $(el)
                 .find(".scene-hover")
-                .attr("data-path") || "";
+                .attr("data-path");
 
-        const previewVideo =
-            previewId
-                ? `https://cdn.handjobjapan.com/preview/${previewId}/hover.mp4`
-                : "";
+        const previewVideo = `https://cdn.handjobjapan.com/preview/${previewId}/hover.mp4`
 
         const itemTitle =
             `${model} ${previewId}`;
@@ -75,18 +71,17 @@ export async function handjobjapan(model, baseUrl) {
 
 <img src="${previewImage}" />
 
-${previewVideo ? `
 <p>预览视频</p>
 
 <video controls preload="none">
     <source src="${previewVideo}" type="video/mp4">
 </video>
-` : ""}
+
 `;
 
         feed.addItem({
             author: [{name: model.replace(/-/g, " ")}],
-            content:content,
+            content: content,
             date: buildStableDate(previewId),
             id: previewId,
             link: profileUrl,
