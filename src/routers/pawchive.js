@@ -32,7 +32,7 @@ export async function pawchive(input, baseUrl) {
         title: `${profile.name} - pawchive`,
         id: `https://pawchive.pw/${input}`,
         link: `https://pawchive.pw/${input}`,
-        image: "https://pawchive.pw/favicon.ico",
+        image: "https://pawchive.pw/static/favicon.png",
         updated: now,
         feedLinks: {
             rss: currentRssUrl
