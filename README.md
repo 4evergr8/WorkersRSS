@@ -49,15 +49,18 @@ https://rss-rss.pages.dev/?<平台>=<参数>
 - Nhentai 标签检索：  
   `https://rss-rss.pages.dev/?nhentai=artist/mignon`
 
+- Iwara 视频：  
+  `https://rss-rss.pages.dev/?iwara=extrafoxes`
+
 - Pawchive 创作者：  
   `https://rss-rss.pages.dev/?pawchive=patreon/user/3295915`
 
-- iTunes 歌手专辑：  
+- iTunes 歌手专辑(失效)：  
   `https://rss-rss.pages.dev/?itunes=473219952`  
   `https://rss-rss.pages.dev/?itunes=lukasgraham`
 
 
-想抓任意网页？直接用 raw ：
+想抓任意网页？直接用 raw进行测试 ：
 
 ```
 https://rss-rss.pages.dev/?raw=https://example.com/some-page
