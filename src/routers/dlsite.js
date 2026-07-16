@@ -61,6 +61,7 @@ export async function dlsite(RG,baseUrl) {
             const base = `https://img.dlsite.jp/modpub/images2/work/doujin/${bucket}/${rj}`;
 
             images = [
+                `${base}_img_main.webp`,
                 `${base}_img_smp1.webp`,
                 `${base}_img_smp2.webp`,
                 `${base}_img_smp3.webp`,
@@ -84,7 +85,6 @@ ${images.map(v => `<img src="${v}" />`).join("\n")}
             author: [{ name: author }],
             content: fullContent,
             date: new Date(now.getTime() - i * 1000),
-            enclosure:`https://img.dlsite.jp/modpub/images2/work/doujin/${getBucket(rj)}/${rj}_img_main.webp`,
             id: link,
             link: link,
             title: itemTitle,
