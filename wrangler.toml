@@ -1,6 +1,6 @@
-name = "rss"
-main = "main.js"
-compatibility_date = "2025-03-12"
-[observability.logs]
-enabled = true
+name = "rss-rss"
+pages_build_output_dir = "./src"
+compatibility_date = "2026-06-07"
 
+# wrangler pages dev  --ip 0.0.0.0 --port 8787
+# wrangler pages deploy
