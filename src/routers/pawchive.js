@@ -1,4 +1,4 @@
-import { Feed } from "feed";
+import {Feed} from "feed";
 
 export async function pawchive(input, baseUrl) {
     const now = new Date();
@@ -29,14 +29,11 @@ export async function pawchive(input, baseUrl) {
 
 
     const feed = new Feed({
-        title: `${profile.name} - pawchive`,
-        id: `https://pawchive.pw/${input}`,
-        link: `https://pawchive.pw/${input}`,
+        feedLinks: {rss: currentRssUrl},
         image: "https://pawchive.pw/static/favicon.png",
+        link: `https://pawchive.pw/${input}`,
+        title: `Pawchive - ${profile.name}`,
         updated: now,
-        feedLinks: {
-            rss: currentRssUrl
-        },
     });
 
 
@@ -45,7 +42,7 @@ export async function pawchive(input, baseUrl) {
             return "";
         }
 
-        return `https://pawchive.pw/data/file${path}`;
+        return `https://file.pawchive.pw/data${path}`;
     };
 
 
@@ -85,33 +82,18 @@ export async function pawchive(input, baseUrl) {
             images.join("");
 
 
-        const cover =
-            post.file?.path
-                ? fileUrl(post.file.path)
-                : "";
+        const cover =fileUrl(post.file.path)
+
 
 
         feed.addItem({
-            title: cleanText(post.title || "untitled"),
-
-            id: `${profile.id}-${post.id}`,
-
-            link:
-                `https://pawchive.pw/${input}/post/${post.id}`,
-
+            author: [{name: profile.name}],
             content: fullContent,
-
-            date: new Date(post.published || post.added),
-
-            enclosure: cover
-                ? cover
-                : undefined,
-
-            author: [
-                {
-                    name: profile.name
-                }
-            ]
+            date: new Date(post.published),
+            enclosure: cover,
+            id: `${profile.id}-${post.id}`,
+            link: `https://pawchive.pw/${input}/post/${post.id}`,
+            title: cleanText(post.title),
         });
     }
 
