@@ -16,7 +16,7 @@ function buildStableDate(id) {
 
     const num =
         parseInt(
-            ((id.match(/^\d+/)?.[0] || "")
+            ((id.match(/^\d+/)?.[0])
                 .slice(0, 4))
                 .slice(0, 3),
             10
@@ -56,13 +56,13 @@ export async function cospuri(model, baseUrl) {
         const thumbDiv =
             $(el).find(".scene-thumb");
         const style =
-            thumbDiv.attr("style") || "";
+            thumbDiv.attr("style") ;
 
         const previewImage =
-            style.match(/url\((.*?)\)/)?.[1] || "";
+            style.match(/url\((.*?)\)/)?.[1] ;
 
         const sampleLink =
-            thumbDiv.find("a").attr("href") || "";
+            thumbDiv.find("a").attr("href");
 
         const fullLink =
             "https://www.cospuri.com" + sampleLink;
@@ -70,11 +70,11 @@ export async function cospuri(model, baseUrl) {
         const sampleId =
             new URLSearchParams(
                 sampleLink.split("?")[1]
-            ).get("id") || "";
+            ).get("id") ;
 
         const hoverVideo =
             thumbDiv.find(".scene-hover")
-                .attr("data-path") || "";
+                .attr("data-path") ;
 
         const modelName =
             $(el)
