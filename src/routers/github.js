@@ -61,7 +61,6 @@ ${assetsHtml}
             author: [{name: r.author?.login}],
             content: fullContent,
             date: new Date(r.published_at),
-            enclosure: "https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png",
             id: r.html_url,
             link: r.html_url,
             title: r.name
