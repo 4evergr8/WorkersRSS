@@ -48,9 +48,9 @@ export async function dlsite(RG,baseUrl) {
 
     $("#search_result_img_box > li.search_result_img_box_inner").each((i, el) => {
 
-        const itemTitle = $(el).find("dd.work_name a").attr("title") || "";
-        const link = $(el).find("dd.work_name a").attr("href") || "";
-        const author = $(el).find("dd.maker_name a").first().text().trim() || "";
+        const itemTitle = $(el).find("dd.work_name a").attr("title");
+        const link = $(el).find("dd.work_name a").attr("href")
+        const author = $(el).find("dd.maker_name a").first().text().trim();
 
         const rj = extractRJ(link);
 
@@ -69,9 +69,9 @@ export async function dlsite(RG,baseUrl) {
             ];
         }
 
-        const price = $(el).find("span.work_price_base").first().text().trim() || "";
-        const genre = $(el).find("dd div a").first().text().trim() || "";
-        const sales = $(el).find("dd.work_dl span").text().trim() || "";
+        const price = $(el).find("span.work_price_base").first().text().trim() ;
+        const genre = $(el).find("dd div a").first().text().trim() ;
+        const sales = $(el).find("dd.work_dl span").text().trim() ;
 
         const summaryDescription =
             `作者: ${author} | 类型: ${genre} | 价格: ${price} | 销量: ${sales}`;
