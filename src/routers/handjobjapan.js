@@ -88,7 +88,6 @@ ${previewVideo ? `
             author: [{name: model.replace(/-/g, " ")}],
             content:content,
             date: buildStableDate(previewId),
-            enclosure: previewImage,
             id: previewId,
             link: profileUrl,
             title: itemTitle,
