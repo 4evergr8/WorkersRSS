@@ -1,9 +1,8 @@
-import { Feed } from "feed";
+import {Feed} from "feed";
 
-export async function github(REP,baseUrl) {
+export async function github(REP, baseUrl) {
     const apiUrl = `https://api.github.com/repos/${REP}/releases`;
     const currentRssUrl = `${baseUrl}?github=${REP}`;
-
 
 
     const resp = await fetch(apiUrl, {
@@ -23,14 +22,11 @@ export async function github(REP,baseUrl) {
     const now = new Date();
 
     const feed = new Feed({
-        title: `${REP} - Github`,
-        id: `https://github.com/${REP}/releases`,
-        link: `https://github.com/${REP}/releases`,
+        feedLinks: {rss: currentRssUrl},
         image: "https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png",
+        link: `https://github.com/${REP}/releases`,
+        title: `Github - ${REP}`,
         updated: now,
-        feedLinks: {
-            rss: currentRssUrl
-        },
     });
 
     for (const r of releases) {
@@ -62,23 +58,13 @@ ${assetsHtml}
 `;
 
         feed.addItem({
-            title: r.name || r.tag_name,
+            author: [{name: r.author?.login}],
+            content: fullContent,
+            date: new Date(r.published_at),
+            enclosure: "https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png",
             id: r.html_url,
             link: r.html_url,
-            // 完整 HTML 内容
-            content: fullContent,
-
-            author: [
-                {
-                    name: r.author?.login || "unknown"
-                }
-            ],
-
-            date: r.published_at
-                ? new Date(r.published_at)
-                : now,
-
-            image: "https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png"
+            title: r.name
         });
     }
 
