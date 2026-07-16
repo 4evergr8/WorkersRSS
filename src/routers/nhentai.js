@@ -16,14 +16,11 @@ export async function nhentai(input,baseUrl) {
     const tagId = tagData.id;
 
     const feed = new Feed({
-        title: `${input} - nhentai`,
-        id: `https://nhentai.net/${input}/`,
-        link: `https://nhentai.net/${input}/`,
+        feedLinks: {rss: currentRssUrl},
         image: "https://nhentai.net/favicon.png",
+        link: `https://nhentai.net/${input}/`,
+        title: `nhentai - ${input}`,
         updated: now,
-        feedLinks: {
-            rss: currentRssUrl
-        },
     });
 
     // 中文
@@ -130,8 +127,6 @@ export async function nhentai(input,baseUrl) {
             contentTitle = cleanText(contentTitle);
 
             const pagesCount = item.num_pages || 0;
-            const cover =`https://t.nhentai.net/${item.thumbnail}`;
-
             const coverExt =
                 item.thumbnail
                     ?.match(/\.(webp|jpg|png)$/i)?.[1]
@@ -146,14 +141,17 @@ export async function nhentai(input,baseUrl) {
                 images.push(`<img src="${imgUrl}"  alt="P${p}/${pagesCount}"/>`);
             }
 
+
             const feedItem = {
-                title,
-                id: `${uniqueId}${gid}`,
-                link: `https://nhentai.net/g/${gid}/`,
+                author: [{ name: input }],
                 content: images.join(""),
                 date: new Date(1600000000000 + gid * 1000),
-                enclosure: cover,
-                author: [{ name: input }]
+                enclosure: `https://i.nhentai.net/galleries/${mediaId}/1.${coverExt}`,
+                id: `${uniqueId}${gid}`,
+                link: `https://nhentai.net/g/${gid}/`,
+                title:title
+
+
             };
 
             const old = works.get(uniqueId);
