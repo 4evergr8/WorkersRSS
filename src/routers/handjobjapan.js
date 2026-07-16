@@ -1,5 +1,5 @@
 import * as cheerio from "cheerio";
-import { Feed } from "feed";
+import {Feed} from "feed";
 
 function buildStableDate(id) {
 
@@ -28,52 +28,47 @@ export async function handjobjapan(model, baseUrl) {
 
     const resp = await fetch(profileUrl);
 
-const html = await resp.text();
+    const html = await resp.text();
 
-const $ = cheerio.load(html);
+    const $ = cheerio.load(html);
 
-const now = new Date();
+    const now = new Date();
 
-const title =
-    $(".item-title h1").first().text().trim() ||
-    `${model} Scenes`;
 
-const feed = new Feed({
-    title: `${model} - Handjob Japan`,
-    id: profileUrl,
-    link: profileUrl,
-    image: "https://www.handjobjapan.com/favicon.ico",
-    updated: now,
-    feedLinks: {
-        rss: currentRssUrl
-    }
-});
 
-$(".vthumb.item").each((i, el) => {
+    const feed = new Feed({
+        feedLinks: {rss: currentRssUrl},
+        image: "https://www.handjobjapan.com/favicon.ico",
+        link: profileUrl,
+        title: `HandjobJapan - ${model}`,
+        updated: now,
+    });
 
-    const style =
-        $(el).attr("style") || "";
+    $(".vthumb.item").each((i, el) => {
 
-    const previewImage =
-        style.match(/url\((.*?)\)/)?.[1] || "";
+        const style =
+            $(el).attr("style") || "";
 
-    const previewId =
-        $(el)
-            .find(".scene-hover")
-            .attr("data-path") || "";
+        const previewImage =
+            style.match(/url\((.*?)\)/)?.[1] || "";
 
-    const previewVideo =
-        previewId
-            ? `https://cdn.handjobjapan.com/preview/${previewId}/hover.mp4`
-            : "";
+        const previewId =
+            $(el)
+                .find(".scene-hover")
+                .attr("data-path") || "";
 
-    const itemTitle =
-        `${model} ${previewId}`;
+        const previewVideo =
+            previewId
+                ? `https://cdn.handjobjapan.com/preview/${previewId}/hover.mp4`
+                : "";
 
-    const summaryDescription =
-        `模特: ${model} | ID: ${previewId}`;
+        const itemTitle =
+            `${model} ${previewId}`;
 
-    const content = `
+        const summaryDescription =
+            `模特: ${model} | ID: ${previewId}`;
+
+        const content = `
 <p>${summaryDescription}</p>
 
 <p>预览图片</p>
@@ -89,29 +84,16 @@ ${previewVideo ? `
 ` : ""}
 `;
 
-    feed.addItem({
-        title: itemTitle,
-        id: previewId,
-        link: profileUrl,
-        description: summaryDescription,
-        content,
-
-        author: [
-            {
-                name: model.replace(/-/g, " ")
-            }
-        ],
-
-        date: buildStableDate(previewId),
-
-        image: previewImage,
-
-        enclosure: {
-            url: previewImage,
-            type: "image/jpeg"
-        }
+        feed.addItem({
+            author: [{name: model.replace(/-/g, " ")}],
+            content:content,
+            date: buildStableDate(previewId),
+            enclosure: previewImage,
+            id: previewId,
+            link: profileUrl,
+            title: itemTitle,
+        });
     });
-});
 
-return feed.rss2();
+    return feed.rss2();
 }
