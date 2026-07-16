@@ -105,7 +105,6 @@ ${previewVideo ? `
             content,
             date: new Date(`${publishDate}T00:00:00Z`),
             description: summaryDescription,
-            enclosure: previewImage,
             id: previewId,
             link: profileUrl,
             title,
