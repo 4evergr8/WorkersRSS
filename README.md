@@ -9,14 +9,7 @@
 ## 项目碎碎念😅
 
 我一直认为 RSS 属于那种「不是每天都看，但是偶尔会去确认一下」的内容。  
-结果迫于 RSSHub 没有我想要的网站，也没找到稳定可靠的公共节点，又不想自己花钱买服务器折腾……  
-
-**想要添加新网站？其实超级简单** ✨  
-用 `/raw=https://xxx.com` 参数把目标网址丢进去，先访问一下看看有没有风控、能不能正常加载内容。  
-把项目地址 + 项目里已有的任何一个网站的解析代码一起丢给AI，它基本就能帮你写出对应的解析逻辑。  
-
-多数网站支持直接调用 API（速度快、干净），少数顽固的只能老老实实解析网页 HTML。
-
+结果迫于 RSSHub 没有我想要的网站，也没找到稳定可靠的公共节点，又不想自己花钱买服务器折腾……
 ## 🔥 功能亮点
 
 - 🌍 访问网页或调用平台 API，轻松抓取内容
@@ -34,7 +27,7 @@
 部署后得到你的专属 RSS 地址，例如：
 
 ```
-https://rss.ID.workers.dev
+https://rss-rss.pages.dev
 ```
 
 ## 🎯 食用方法
@@ -42,29 +35,29 @@ https://rss.ID.workers.dev
 基本格式（直接浏览器打开或丢进 RSS 阅读器）：
 
 ```
-https://你的workers域名/?<平台>=<参数>
+https://rss-rss.pages.dev/?<平台>=<参数>
 ```
 
 已有路由：
 
 - GitHub 仓库更新：  
-  `https://rss.4evergr8.workers.dev/?github=4evergr8/atoolbox`
+  `https://rss-rss.pages.dev/?github=4evergr8/atoolbox`
 
 - DLsite 社团新作：  
-  `https://rss.4evergr8.workers.dev/?dlsite=RG51931`
+  `https://rss-rss.pages.dev/?dlsite=RG51931`
 
 - Nhentai 标签检索：  
-  `https://rss.4evergr8.workers.dev/?nhentai=artist/mignon`
+  `https://rss-rss.pages.dev/?nhentai=artist/mignon`
 
 - iTunes 歌手专辑：  
-  `https://rss.4evergr8.workers.dev/?itunes=473219952`
-  `https://rss.4evergr8.workers.dev/?itunes=lukasgraham`
+  `https://rss-rss.pages.dev/?itunes=473219952`  
+  `https://rss-rss.pages.dev/?itunes=lukasgraham`
 
 
 想抓任意网页？直接用 raw ：
 
 ```
-https://你的workers域名/raw/https://example.com/some-page
+https://rss-rss.pages.dev/?raw=https://example.com/some-page
 ```
 
 （然后让 ChatGPT 帮你写解析规则就行～）
@@ -78,5 +71,5 @@ https://你的workers域名/raw/https://example.com/some-page
 ## ❤️ 感谢 & 灵感来源
 
 - Cloudflare Workers 平台
-- RSSHub 项目（但我就是不想等公共节点也不想自建大服务器😂）
+- RSSHub 项目（但我就是不想用公共节点也不想自建服务器😂）
  
