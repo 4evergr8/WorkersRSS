@@ -39,14 +39,11 @@ export async function dlsite(RG,baseUrl) {
     const now = new Date();
 
     const feed = new Feed({
-        title: `${title} - DLSite`,
-        id: `https://www.dlsite.com/maniax/circle/profile/=/maker_id/${RG}.html`,
-        link: `https://www.dlsite.com/maniax/circle/profile/=/maker_id/${RG}.html`,
+        feedLinks: {rss: currentRssUrl},
         image: "https://www.dlsite.com/images/web/common/favicon.ico",
+        link: `https://www.dlsite.com/maniax/circle/profile/=/maker_id/${RG}.html`,
+        title: `DLSite - ${title}`,
         updated: now,
-        feedLinks: {
-            rss: currentRssUrl
-        },
     });
 
     $("#search_result_img_box > li.search_result_img_box_inner").each((i, el) => {
@@ -64,7 +61,6 @@ export async function dlsite(RG,baseUrl) {
             const base = `https://img.dlsite.jp/modpub/images2/work/doujin/${bucket}/${rj}`;
 
             images = [
-                `${base}_img_main.webp`,
                 `${base}_img_smp1.webp`,
                 `${base}_img_smp2.webp`,
                 `${base}_img_smp3.webp`,
@@ -85,13 +81,13 @@ ${images.map(v => `<img src="${v}" />`).join("\n")}
 `;
 
         feed.addItem({
-            title: itemTitle,
+            author: [{ name: author }],
+            content: fullContent,
+            date: new Date(now.getTime() - i * 1000),
+            enclosure:`https://img.dlsite.jp/modpub/images2/work/doujin/${getBucket(rj)}/${rj}_img_main.webp`,
             id: link,
             link: link,
-            content: fullContent,
-            author: [{ name: author }],
-            date: new Date(now.getTime() - i * 1000),
-            image: images[0] || ""
+            title: itemTitle,
         });
     });
 
