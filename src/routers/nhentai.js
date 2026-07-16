@@ -85,11 +85,11 @@ export async function nhentai(input,baseUrl) {
             const mediaId = item.media_id;
 
             const japaneseTitle = cleanText(
-                item.japanese_title || ""
+                item.japanese_title 
             );
 
             const englishTitle = cleanText(
-                item.english_title || ""
+                item.english_title 
             );
 
             const title =
@@ -146,7 +146,7 @@ export async function nhentai(input,baseUrl) {
                 author: [{ name: input }],
                 content: images.join(""),
                 date: new Date(1600000000000 + gid * 1000),
-                id: `${uniqueId}${gid}`,
+                id: `https://nhentai.net/g/${gid}/`,
                 link: `https://nhentai.net/g/${gid}/`,
                 title:title
 
