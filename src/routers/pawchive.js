@@ -54,13 +54,13 @@ export async function pawchive(input, baseUrl) {
 
     for (const post of posts) {
 
-        const content = post.content || "";
+        const content = post.content ;
 
         const images = [];
 
         if (post.file?.path) {
             images.push(
-                `<img src="${fileUrl(post.file.path)}" alt="${post.file.name || ""}"/>`
+                `<img src="${fileUrl(post.file.path)}" alt="${post.file.name }"/>`
             );
         }
 
@@ -72,7 +72,7 @@ export async function pawchive(input, baseUrl) {
             }
 
             images.push(
-                `<img src="${fileUrl(attachment.path)}" alt="${attachment.name || ""}"/>`
+                `<img src="${fileUrl(attachment.path)}" alt="${attachment.name }"/>`
             );
         }
 
@@ -90,7 +90,7 @@ export async function pawchive(input, baseUrl) {
             author: [{name: profile.name}],
             content: fullContent,
             date: new Date(post.published),
-            id: `${profile.id}-${post.id}`,
+            id: `https://pawchive.pw/${input}/post/${post.id}`,
             link: `https://pawchive.pw/${input}/post/${post.id}`,
             title: cleanText(post.title),
         });
