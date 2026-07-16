@@ -50,7 +50,7 @@ export async function nhentai(input,baseUrl) {
     };
 
     const cleanText = (text = "") =>
-        text
+        String(text || "")
             .replace(/[\x00-\x1F\x7F-\x9F]/g, "")
             .trim();
 
