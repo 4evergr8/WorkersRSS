@@ -74,7 +74,7 @@ export async function iwara(input, baseUrl) {
             .join(", ");
 
         const content = [
-            `<img src="${previewImage}" alt="${itemTitle}"/>`
+            `<img src="${previewImage}" alt="${itemTitle}"/>`,
 
 
             `<p>${itemTitle}</p>`,
