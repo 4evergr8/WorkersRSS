@@ -99,7 +99,7 @@ export async function itunes(artistIdOrName, baseUrl) {
                 typeLabel = "EP / 迷你专辑";
             }
 
-            const rawArtwork = album.artworkUrl100 || "";
+            const rawArtwork = album.artworkUrl100 ;
             const hdArtwork = rawArtwork.replace("100x100bb.jpg", "600x600bb.jpg");
             const releaseDate = album.releaseDate ? new Date(album.releaseDate) : now;
 
@@ -117,7 +117,7 @@ export async function itunes(artistIdOrName, baseUrl) {
                 }
                 return `
 <li style="margin-bottom: 12px;">
-    <strong>${t.trackNumber || ""}. ${t.trackName}</strong>
+    <strong>${t.trackNumber }. ${t.trackName}</strong>
     ${audioPlayer}
 </li>`;
             }).join("");
