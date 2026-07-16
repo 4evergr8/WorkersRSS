@@ -46,7 +46,7 @@ SHA256: ${a.digest || "无"}
         // release 正文 + assets
         const fullContent = `
 <div>
-${(r.body || "").replace(/\n/g, "<br/>")}
+${(r.body).replace(/\n/g, "<br/>")}
 </div>
 
 <br/>
