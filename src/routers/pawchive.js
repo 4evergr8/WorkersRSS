@@ -90,7 +90,6 @@ export async function pawchive(input, baseUrl) {
             author: [{name: profile.name}],
             content: fullContent,
             date: new Date(post.published),
-            enclosure: cover,
             id: `${profile.id}-${post.id}`,
             link: `https://pawchive.pw/${input}/post/${post.id}`,
             title: cleanText(post.title),
