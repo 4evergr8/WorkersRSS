@@ -1,12 +1,3 @@
-import {dlsite} from "./routers/dlsite.js"
-import {github} from "./routers/github.js"
-import {nhentai} from "./routers/nhentai.js"
-import {itunes} from "./routers/itunes.js";
-import {cospuri} from "./routers/cospuri.js";
-import {fellatiojapan} from "./routers/fellatiojapan.js";
-import {handjobjapan} from "./routers/handjobjapan.js";
-import {pawchive} from "./routers/pawchive.js";
-
 // 统一的 CORS 响应头配置
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -16,7 +7,6 @@ const corsHeaders = {
 
 export default {
     async fetch(request) {
-        // 1. 处理浏览器的预检请求 (OPTIONS)
         if (request.method === "OPTIONS") {
             return new Response(null, {
                 status: 204,
@@ -26,23 +16,18 @@ export default {
 
         const url = new URL(request.url)
 
-        // 提取当前 Worker 的自身基础链接 (例如 https://xxx.workers.dev/ 形式)
         const baseUrl = url.origin + url.pathname
 
-        // 【核心修改】将所有参数转为数组，直接解构获取第一组参数和值
         const paramsArray = [...url.searchParams]
 
         let mode = null
         let value = null
 
         if (paramsArray.length > 0) {
-            // 直接锁定第一组参数：[0][0] 是参数名(mode)，[0][1] 是参数值(value)
             mode = paramsArray[0][0]
             value = paramsArray[0][1]
         }
 
-
-        // 2. 如果第一组参数是 raw 代理模式，直接在主函数中处理
         if (mode === "raw") {
             let targetUrlStr = value
 
@@ -53,16 +38,17 @@ export default {
             const targetUrl = new URL(targetUrlStr)
 
             let body = null
+
             if (request.method !== "GET" && request.method !== "HEAD") {
                 body = await request.clone().arrayBuffer()
             }
 
             const fetchRequest = new Request(targetUrl.href, {
                 method: request.method,
-                headers: request.headers, // 完全套用来访 Header
-                body: body,
+                headers: request.headers,
+                body,
                 redirect: "follow",
-            });
+            })
 
             const resp = await fetch(fetchRequest)
             const text = await resp.text()
@@ -77,12 +63,16 @@ export default {
             })
         }
 
-
-        const funcs = {dlsite, github, nhentai, itunes, cospuri, fellatiojapan, handjobjapan, pawchive}
-        const func = funcs[mode]
-
-        if (typeof func === "function") {
+        if (mode) {
             try {
+                const module = await import(`./routers/${mode}.js`)
+
+                const func = module[mode]
+
+                if (typeof func !== "function") {
+                    throw new Error(`${mode}.js 中没有导出 ${mode} 函数`)
+                }
+
                 const result = await func(value, baseUrl)
 
                 return new Response(result, {
@@ -91,6 +81,7 @@ export default {
                         ...corsHeaders
                     }
                 })
+
             } catch (error) {
                 return new Response(
                     `错误: ${error.message || error}`,
