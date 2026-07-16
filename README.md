@@ -41,13 +41,16 @@ https://rss-rss.pages.dev/?<平台>=<参数>
 已有路由：
 
 - GitHub 仓库更新：  
-  `https://rss-rss.pages.dev/?github=4evergr8/atoolbox`
+  `https://rss-rss.pages.dev/?github=4evergr8/FlutterPicOrigin`
 
 - DLsite 社团新作：  
   `https://rss-rss.pages.dev/?dlsite=RG51931`
 
 - Nhentai 标签检索：  
   `https://rss-rss.pages.dev/?nhentai=artist/mignon`
+
+- Pawchive 创作者：  
+  `https://rss-rss.pages.dev/?Pawchive=patreon/user/3295915`
 
 - iTunes 歌手专辑：  
   `https://rss-rss.pages.dev/?itunes=473219952`  
