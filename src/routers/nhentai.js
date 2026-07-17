@@ -1,6 +1,6 @@
-import { Feed } from "feed";
+import {Feed} from "feed";
 
-export async function nhentai(input,baseUrl) {
+export async function nhentai(input, baseUrl) {
     const now = new Date();
     const currentRssUrl = `${baseUrl}?nhentai=${input}`;
 
