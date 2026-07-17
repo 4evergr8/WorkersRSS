@@ -4,9 +4,22 @@ export async function nhentai(input, baseUrl) {
     const now = new Date();
     const currentRssUrl = `${baseUrl}?nhentai=${input}`;
 
-    const tagResp = await fetch(
-        `https://nhentai.net/api/v2/tags/${input}`
-    );
+    const tagUrl =
+        `https://nhentai.net/api/v2/tags/${input}`;
+
+    let tagResp;
+
+    while (true) {
+        tagResp = await fetch(tagUrl);
+
+        if (tagResp.status !== 429) {
+            break;
+        }
+
+        await new Promise(resolve =>
+            setTimeout(resolve, 5000)
+        );
+    }
 
     if (!tagResp.ok) {
         const text = await tagResp.text();
