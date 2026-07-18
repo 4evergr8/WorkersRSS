@@ -187,7 +187,7 @@ export async function nhentai(input, baseUrl) {
                     `https://i.nhentai.net/galleries/${mediaId}/${p}.${coverExt}`;
 
                 images.push(
-                    `<img src="${imgUrl}" alt="P${p}/${pagesCount}"/>`
+                    `<img src="${imgUrl}" loading="lazy" alt="P${p}/${pagesCount}"/>`
                 );
             }
 
